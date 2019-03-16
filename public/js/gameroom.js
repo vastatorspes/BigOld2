@@ -1,0 +1,310 @@
+var socket = io();
+var roomPlayersNumb, mynumb, p2numb, p3numb,p4numb;
+var pass = false;
+var params = jQuery.deparam(window.location.search);
+var timer;
+var timeCount = 20000;
+// waktu player konek ke server / masuk room
+socket.on('connect', function(){
+    console.log('Player Connected to the Server');
+    // ----------------------- EVENT 1. EMIT JOIN WAITING ROOM -----------------------
+    socket.emit('joinWaitingRoom', params, function(message){
+        if(message === 'Room is Full'){
+            alert(message);
+            window.location.href = '/';
+        }
+        else if(message === 'Username already taken'){
+            alert(message);
+            window.location.href = '/';
+        }
+    });
+});
+
+// bikin tampilan masing2 player di room
+socket.on('updatePlayerList', function(players){
+    console.log(players);
+    jQuery('#player-room').empty();
+    players.forEach(function(name){
+        jQuery('#player-room').append(jQuery('<div></div>').addClass('w3-card w3-green')
+        .append(jQuery('<h3></h3>').text(name)))
+    });
+});   
+
+socket.on('gameStart', function(playersNumb){
+    roomPlayersNumb = playersNumb;
+    document.querySelector("link[href='/css/waiting.css']").href = "/css/game.css";
+    $("div.waiting-div").css("display", "none");
+
+    // var myturn = playersNumb.find(x => x.username === params.Username).numb; [ES6]
+    // -----------------p1name------------------
+    var myturn = playersNumb.find(function(x){
+        if(x.username === params.Username){return x;}
+    });
+    jQuery(".myname").text(myturn.username);
+    mynumb = myturn.numb;
+
+    // -----------------p2name------------------
+    var p2turn = playersNumb.find(function(x){
+        var numb = (myturn.numb + 1) % 4;
+        numb === 0 ? numb = 4 : numb;
+        if(x.numb === numb){return x;}
+    });
+    jQuery(".p2name").text(p2turn.username);
+    p2numb = p2turn.numb;
+
+    // -----------------p3name------------------
+    var p3turn = playersNumb.find(function(x){
+        var numb = (myturn.numb + 2) % 4;
+        numb === 0 ? numb = 4 : numb;
+        if(x.numb === numb){return x;}
+    });
+    jQuery(".p3name").text(p3turn.username);
+    p3numb = p3turn.numb;
+
+    // -----------------p4name------------------
+    var p4turn = playersNumb.find(function(x){
+        var numb = (myturn.numb + 3) % 4;
+        numb === 0 ? numb = 4 : numb;
+        if(x.numb === numb){return x;}
+    });
+    jQuery(".p4name").text(p4turn.username)
+    p4numb = p4turn.numb;
+
+    jQuery(".high-score").text(myturn.username + ": 0")
+    jQuery(".second-score").text(p2turn.username + ": 0")
+    jQuery(".third-score").text(p3turn.username + ": 0")
+    jQuery(".fourth-score").text(p4turn.username + ": 0")
+    emitInitHand();
+});
+
+socket.on("afterThrow", function(currentTurn, topfield){
+    clearTimeout(timer)
+    jQuery('.player-bot img').remove();
+    jQuery('.player-left img').remove();
+    jQuery('.player-right img').remove();
+    jQuery('.player-top img').remove();
+    jQuery('.img-card-field').remove();
+    emitInitHand();
+    
+    $(".btn-div").css("display", "none");
+    
+    var prevPno = roomPlayersNumb.find(function(x){
+        return x.username === topfield.username;
+    }).numb;
+    
+    // ------------------ Tampilin Field ------------------------
+    showField(prevPno, topfield);
+    if(params.Username === currentTurn){
+        $(".btn-div").css("display", "block");
+        $(".btn-pass").prop("disabled", false);
+        timer = setTimeout(()=>{
+            passButton();
+        }, timeCount)
+    }
+})
+
+socket.on("afterPass", function(currentTurn, prevPno, passCount){
+    clearTimeout(timer)
+    $(".btn-div").css("display", "none");
+    showPass(prevPno);
+    
+    if(passCount === 3){
+        pass = false;
+        $(".btn-pass").prop("disabled", true);
+        jQuery(".pass-sign").empty();
+
+        if(params.Username === currentTurn){
+            $(".btn-div").css("display", "block");
+            timer = setTimeout(()=>{
+                socket.emit("cdControlTurn", params)
+            }, timeCount)
+        }
+    }
+    else{
+        if(params.Username === currentTurn){
+            $(".btn-div").css("display", "block");
+            $(".btn-pass").prop("disabled", false);
+            timer = setTimeout(()=>{
+                passButton();
+            }, timeCount)
+        }
+    }
+})
+
+socket.on("newGame", function(pScore){
+    $(".btn-div").css("display", "none");
+    jQuery('.player-bot img').remove();
+    jQuery('.player-left img').remove();
+    jQuery('.player-right img').remove();
+    jQuery('.player-top img').remove();
+    jQuery('.img-card-field').remove();
+
+    // var sortable = [];
+    // for (var username in pScore) {
+    //     sortable.push([username, pScore[username]]);
+    // }
+
+    var playerScore = pScore.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+
+    jQuery(".high-score").text(playerScore[0][0] + ": " + playerScore[0][1])
+    jQuery(".second-score").text(playerScore[1][0] + ": " + playerScore[1][1])
+    jQuery(".third-score").text(playerScore[2][0] + ": " + playerScore[2][1])
+    jQuery(".fourth-score").text(playerScore[3][0] + ": " + playerScore[3][1])
+    emitInitHand();
+})
+
+// ------------------ Tampilin Tangan ------------------------
+function emitInitHand(){
+    socket.emit('initHand',params, function(hand){
+        // ------------------------------------------------------ player1 table ------------------------------------------------------
+        for(i=0; i<hand.myhand.length; i++){
+            if(i === 0){
+                jQuery('.player-bot').append(jQuery(`<img id="F${hand.myhand[i]}NON" onClick="getId(this, this.id)" 
+                                                        src="/cards_img/${hand.myhand[i]}.png" height="140" >`));
+            }
+            if(i>0){
+                jQuery('.player-bot').append(jQuery(`<img id="L${hand.myhand[i]}NON" onClick="getId(this, this.id)" class ="hor-margin" 
+                                                        src="/cards_img/${hand.myhand[i]}.png" height="140">`));
+            }
+        }
+        // munculin tombol kalo jalan pertama
+        if(hand.myhand[0] === "3D"){
+            $(".btn-div").css("display", "block");
+            $(".btn-pass").prop("disabled", true);
+            timer = setTimeout(()=>{
+                socket.emit("throwCard", params, ["3D"], function(err){
+                    if(err){
+                        alert(err);
+                        return false;
+                    }
+                    return true;
+                })
+            }, timeCount)
+        }
+        // ------------------------------------------------------ player2 table ------------------------------------------------------
+        for(i=0; i<hand.p2hand; i++){
+            if(i === hand.p2hand){
+                jQuery('.player-left').append(jQuery(`<img class="rotate90" src="cards_img/red_back.png" height="140">`))
+            }
+            if(i<hand.p2hand){
+                jQuery('.player-left').append(jQuery(`<img class="rotate90 ver-margin" src="cards_img/red_back.png" height="140">`))
+            }
+        }
+
+        // ------------------------------------------------------ player3 table ------------------------------------------------------
+        for(i=0; i<hand.p3hand; i++){
+            if(i === 0){
+                jQuery('.player-top').append(jQuery(`<img src="cards_img/red_back.png" height="140">`));
+                
+            }
+            if(i>0){
+                jQuery('.player-top').append(jQuery(`<img class ="hor-margin" src="cards_img/red_back.png" height="140">`));
+            }
+        }
+
+        // ------------------------------------------------------ player4 table ------------------------------------------------------
+        for(i=0; i<hand.p4hand; i++){
+            if(i === hand.p4hand){
+                jQuery('.player-right').append(jQuery(`<img class="rotate90" src="cards_img/red_back.png" height="140">`))
+            }
+            if(i<hand.p4hand){
+                jQuery('.player-right').append(jQuery(`<img class="rotate90 ver-margin" src="cards_img/red_back.png" height="140">`))
+            }
+        }
+    });
+}
+
+function showField(prevPno, topfield){
+    if (prevPno === p2numb){
+        for(var i=0; i<topfield.card.length; i++){
+            if(i === 0){
+                jQuery('.field-left').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(i>0){
+                jQuery('.field-left').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+
+    if (prevPno === p3numb){
+        for(var i=0; i<topfield.card.length; i++){
+            if(i === 0){
+                jQuery('.field-top').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(i>0){
+                jQuery('.field-top').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+
+    if (prevPno === p4numb){
+        for(var i=0; i<topfield.card.length; i++){
+            if(i === 0){
+                jQuery('.field-right').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(i>0){
+                jQuery('.field-right').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+
+    if (prevPno === mynumb){
+        for(var i=0; i<topfield.card.length; i++){
+            if(i === 0){
+                jQuery('.field-bot').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(i>0){
+                jQuery('.field-bot').append(
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+}
+
+function showPass(prevPno){
+    if (prevPno === p2numb){
+        jQuery('.player-left .pass-sign').append(
+            jQuery("<center><h4> PASS </h4></center>")
+        )
+    }
+
+    if (prevPno === p3numb){
+        jQuery('.player-top .pass-sign').append(
+            jQuery("<center><h4> PASS </h4></center>")
+        )
+    }
+
+    if (prevPno === p4numb){
+        jQuery('.player-right .pass-sign').append(
+            jQuery("<center><h4> PASS </h4></center>")
+        )
+    }
+
+    if (prevPno === mynumb){
+        jQuery('.player-bot .pass-sign').append(
+            jQuery("<center><h4> PASS </h4></center>")
+        )
+    }
+
+}
+
+socket.on('disconnect', function(){
+    console.log('disconnect from server');
+});

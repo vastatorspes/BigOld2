@@ -1,0 +1,145 @@
+.waiting-div{
+    display: none;
+}
+
+body{
+    display: grid;
+    place-items: center;
+    height: 100vh;
+    /* background-image: url("../img/greenbg.jpg"); */
+    background-image: radial-gradient(#00D312,#004203);
+    background-size: cover;
+    /* background-image: linear-gradient(to bottom right, steelblue, cadetblue);  */
+    /* background-image: linear-gradient(to bottom right, #1D976C, #93F9B9);  */
+    /* background-image: linear-gradient(to bottom right, #034c59, steelblue); */
+}
+
+.game-divition{
+    margin: 0px;
+    padding: 0px;
+}
+
+.player-top{
+    position: relative;
+    top: 60px;
+    width: 530px;
+    height: 200px;
+}
+
+.player-bot{
+    width: 530px;
+    height: 200px;
+}
+
+.player-left{
+    width: 200px;
+    height: 525px;
+}
+
+.player-right{
+    width: 200px;
+    height: 525px;
+}
+
+.player-right>img,.player-left>img{
+    position: relative;
+    top: -53px;
+}
+
+.card-field{
+    z-index: -10;
+}
+
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+.ver-margin {
+    margin-bottom: -108px;
+}
+.hor-margin{
+    clear: both;
+    margin-left: -60px;
+    z-index: 100;
+}
+
+.btn-div{
+    position: absolute;
+    top: -100px;
+    display: none;
+}
+
+.btn-play,.btn-pass{
+    border: 3px solid aliceblue;
+    margin-left: 1px !important;
+    font-weight: bold;
+}
+
+.card-bg-hor{
+    position: absolute;
+    width: 530px;
+    height: 200px;
+    z-index: -1;
+    border-radius: 15px;   
+    border: 5px solid whitesmoke; 
+    /* background-image: url("../img/redbg.jpg"); */
+    background-image: radial-gradient(#e73827, #6f0000, #200122);
+    /* background-image: linear-gradient(to bottom right, #0F2027, #2C5364);  */
+    /* background-image: linear-gradient(to bottom right, #e52d27, #b31217);  */
+    /* background-image: linear-gradient(to bottom right, #034c59, steelblue); */
+
+}
+
+.card-bg-ver{
+    position: absolute;
+    width: 200px;
+    height: 525px;
+    border-radius: 15px;
+    border: 5px solid whitesmoke; 
+    /* background-image: url("../img/redbg.jpg"); */
+    background-image: radial-gradient(#e73827, #6f0000, #200122);
+    /* background-image: linear-gradient(to bottom right, #0F2027, #2C5364);  */
+    vertical-align: middle;
+}
+
+.card-bg-top{
+    margin-top: -15px; 
+    text-align: center;
+}
+
+.card-bg-bot{
+    margin-top: -45px; 
+}
+
+.card-bg-right{
+    margin-left: -15px;
+}
+.card-bg-left{
+    margin-left: 15px;
+}
+
+.player-name{
+    color: white;
+}
+
+.pname-right{
+    height:515px;
+}
+.text-rotate-left{
+    position: absolute;
+    top: 50%;
+    transform: rotate(-90deg);
+}
+.pname-left{
+    height:515px;
+}
+.text-rotate-right{
+    position: absolute;
+    top: 50%;
+    transform: rotate(90deg);
+}
+.pname-top{
+    width: 520px;
+    position: absolute;
+    bottom: 0px;
+}

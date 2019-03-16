@@ -1,11 +1,45 @@
 <!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Old 2</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
 
-<html>
-    <head>
-        <meta charset="utf-8">
-    </head>
-
-    <body>
-        <p>Welcome to the Game</p>
-    </body>
+<body>
+    <div class="w3-hide-small" style="height:25vh"></div> <!--batas atas buat medium-->
+    <div class="w3-hide-medium" style="height:10vh"></div> <!--batas atas buat small-->
+    <div class="col-sm-offset-4 col-sm-4 align-middle ">
+        <form action="/game.html" method="GET">
+            <fieldset class="">
+                <center><h3>Login Room</h3></center><br>
+                <div class="form-group">
+                    <label for="name"><h5>Username</h5></label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-user text-primary"></span> </span>
+                        <input id="inputUsername" class="form-control" type="text" name="Username" placeholder="Username" autofocus autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name"><h5>Room</h5></label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-log-in text-primary"></span> </span>
+                        <input id="inputRoom" class="form-control" type="text" name="Room" placeholder="Room" autocomplete="off">
+                    </div>
+                </div><br>
+                <input id="joinRoomButton" type="Submit" value="Join Room" class="btn btn-primary form-control join_button" onclick="return inputCheck()">
+            </fieldset>
+        </form>
+    </div>
+    <div class="w3-hide-medium" style="height:10vh"></div> <!--batas atas buat small-->
+    
+    <script>
+        
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/login.js"></script>
+</body>
 </html>

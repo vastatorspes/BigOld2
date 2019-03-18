@@ -3,12 +3,12 @@ class Players{
         this.players = [];
     }
     
-    addPlayer(id, username, roomname, pno, hand,score){
+    addPlayer(id, username, roomname, roommode, pno, hand,score){
         var gamestatus = "";
         var playstatus = "";
         var hand = [];
         var score = 0;
-        var player = {id, username, roomname, pno, gamestatus, playstatus, hand, score};
+        var player = {id, username, roomname, roommode, pno, gamestatus, playstatus, hand, score};
         this.players.push(player);
         return player;
     }   

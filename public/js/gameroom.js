@@ -170,19 +170,38 @@ function emitInitHand(){
             }
         }
         // munculin tombol kalo jalan pertama
-        if(hand.myhand[0] === "3D"){
-            $(".btn-div").css("display", "block");
-            $(".btn-pass").prop("disabled", true);
-            timer = setTimeout(()=>{
-                socket.emit("throwCard", params, ["3D"], function(err){
-                    if(err){
-                        alert(err);
-                        return false;
-                    }
-                    return true;
-                })
-            }, timeCount)
+        if(params.Mode === "0"){
+            if(hand.myhand[0] === "3D"){
+                $(".btn-div").css("display", "block");
+                $(".btn-pass").prop("disabled", true);
+                timer = setTimeout(()=>{
+                    socket.emit("throwCard", params, ["3D"], function(err){
+                        if(err){
+                            alert(err);
+                            return false;
+                        }
+                        return true;
+                    })
+                }, timeCount)
+            }
         }
+
+        if(params.Mode === "1"){
+            if(hand.myhand[0] === "3C"){
+                $(".btn-div").css("display", "block");
+                $(".btn-pass").prop("disabled", true);
+                timer = setTimeout(()=>{
+                    socket.emit("throwCard", params, ["3C"], function(err){
+                        if(err){
+                            alert(err);
+                            return false;
+                        }
+                        return true;
+                    })
+                }, timeCount)
+            }
+        }
+        
         // ------------------------------------------------------ player2 table ------------------------------------------------------
         for(i=0; i<hand.p2hand; i++){
             if(i === hand.p2hand){

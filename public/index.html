@@ -16,6 +16,8 @@
         <form action="/game.html" method="GET">
             <fieldset class="">
                 <center><h3>Login Room</h3></center><br>
+
+                <!-- username -->
                 <div class="form-group">
                     <label for="name"><h5>Username</h5></label>
                     <div class="input-group input-group-lg">
@@ -23,13 +25,28 @@
                         <input id="inputUsername" class="form-control" type="text" name="Username" placeholder="Username" autofocus autocomplete="off">
                     </div>
                 </div>
+
+                <!-- roomname -->
                 <div class="form-group">
                     <label for="name"><h5>Room</h5></label>
                     <div class="input-group input-group-lg">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-log-in text-primary"></span> </span>
                         <input id="inputRoom" class="form-control" type="text" name="Room" placeholder="Room" autocomplete="off">
                     </div>
+                </div>
+
+                <!-- roommode -->
+                <div class="form-group">
+                    <label for="mode"><h5>Mode</h5></label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-log-in text-primary"></span> </span>
+                        <select class="custom-select form-control" id="inputMode" name="Mode">
+                            <option value="0" selected>International Mode</option>
+                            <option value="1" >Taiwanese Mode</option>
+                        </select>
+                    </div>
                 </div><br>
+
                 <input id="joinRoomButton" type="Submit" value="Join Room" class="btn btn-primary form-control join_button" onclick="return inputCheck()">
             </fieldset>
         </form>

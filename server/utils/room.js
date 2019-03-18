@@ -1,6 +1,8 @@
 const {Card} = require('./card');
 var card = new Card();
 
+const {CardTaiwan} = require('./cardTaiwan');
+var cardTaiwan = new CardTaiwan();
 
 class Rooms{
     constructor(){
@@ -18,7 +20,13 @@ class Rooms{
 
         players.forEach((player)=>{
             var draw = deck.slice(0,13);
-            player.hand = card.sortingCards(draw);
+            if(player.roommode === "0") {
+                player.hand = card.sortingCards(draw);
+            }
+
+            if(player.roommode === "1") {
+                player.hand = cardTaiwan.sortingCards(draw);
+            }
             deck = deck.slice(13, deck.length);
         });
 
@@ -80,6 +88,14 @@ class Rooms{
             currentScore.push({"name":p.username, "score":p.score})
         });
         return currentScore;
+    }
+
+    updateGameStatus(roomname, status){
+        var room = this.getRoom(roomname);
+        var players = room.players;
+        players.forEach(p => {
+            p.gamestatus = status;
+        });
     }
 
     changeTurn(roomname, roomPlayers, curnumb){

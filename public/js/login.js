@@ -4,9 +4,10 @@ var socket = io();
 function inputCheck() {
     var username = document.getElementById("inputUsername").value;
     var roomname = document.getElementById("inputRoom").value;
+    var roommode = document.getElementById("inputMode").value;
     if (typeof username === "string" && typeof roomname === "string" && username.trim().length > 0 && roomname.trim().length >0 ) {
         // event 1. emit Join - waktu player masuk room
-        socket.emit('playerLogin', roomname, username, function(err){
+        socket.emit('playerLogin', roomname, username, roommode, function(err){
             if(err){
                 alert(err);
                 window.location.href = '/';

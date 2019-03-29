@@ -6,9 +6,11 @@ body{
     display: grid;
     place-items: center;
     height: 100vh;
-    /* background-image: url("../img/greenbg.jpg"); */
-    background-image: radial-gradient(#00D312,#004203);
-    background-size: cover;
+    background-image: url("../img/bg.jpg");
+    /* background-image: radial-gradient(#00D312,#004203); */
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
     /* background-image: linear-gradient(to bottom right, steelblue, cadetblue);  */
     /* background-image: linear-gradient(to bottom right, #1D976C, #93F9B9);  */
     /* background-image: linear-gradient(to bottom right, #034c59, steelblue); */
@@ -17,6 +19,12 @@ body{
 .game-divition{
     margin: 0px;
     padding: 0px;
+}
+
+.card-field{
+    background-image: url("../img/middle.jpg");
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .player-top{
@@ -82,7 +90,8 @@ body{
     z-index: -1;
     border-radius: 15px;   
     border: 5px solid whitesmoke; 
-    /* background-image: url("../img/redbg.jpg"); */
+    /* background-image: url("../img/hand-bg-hor.png");
+    background-size: cover; */
     background-image: radial-gradient(#e73827, #6f0000, #200122);
     /* background-image: linear-gradient(to bottom right, #0F2027, #2C5364);  */
     /* background-image: linear-gradient(to bottom right, #e52d27, #b31217);  */
@@ -96,7 +105,8 @@ body{
     height: 525px;
     border-radius: 15px;
     border: 5px solid whitesmoke; 
-    /* background-image: url("../img/redbg.jpg"); */
+    /* background-image: url("../img/hand-bg-ver.png");
+    background-size: cover; */
     background-image: radial-gradient(#e73827, #6f0000, #200122);
     /* background-image: linear-gradient(to bottom right, #0F2027, #2C5364);  */
     vertical-align: middle;
@@ -124,6 +134,9 @@ body{
 
 .pname-right{
     height:515px;
+    padding: 0px;
+    margin-top: -20px;
+    margin-left: 3px;
 }
 .text-rotate-left{
     position: absolute;
@@ -132,6 +145,9 @@ body{
 }
 .pname-left{
     height:515px;
+    padding: 0px;
+    margin-top: -20px;
+    margin-left: 3px;
 }
 .text-rotate-right{
     position: absolute;

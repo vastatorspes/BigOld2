@@ -55,6 +55,16 @@ class Rooms{
         return room;
     }
 
+    getFirstTurnInter(roomname){
+        var player = this.getRoom(roomname).players;
+        return player.find(p => p.hand[0] === "3D").username;
+    }
+
+    getFirstTurnTaiwan(roomname){
+        var player = this.getRoom(roomname).players;
+        return player.find(p => p.hand[0] === "3C").username;
+    }
+
     throwCard(username, roomname, card){
         var room = this.getRoom(roomname);
         var getplayer = room.players;
@@ -137,6 +147,20 @@ class Rooms{
             playersScore.push([username, score]);
         });
         return playersScore;
+    }
+
+    isRoomEmpty(roomname){
+        var playerList = this.getRoom(roomname).players;
+        var disconnected = playerList.filter(x => x.gamestatus === "disconnected").length;
+        return (disconnected === 4);
+    }
+
+    removeRoom(roomname){
+        var room = this.getRoom(roomname);
+        if (room){
+            this.rooms = this.rooms.filter((room)=> room.roomname != roomname);
+        }
+        return room;
     }
 }
 

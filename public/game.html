@@ -5,35 +5,50 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Big Old 2</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
         <link rel="stylesheet" href="bootstrap-4.1.3-dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link rel="stylesheet" href="/css/waiting.css">
     </head>
 
     <body>
-        <div class="waiting-div row">
+        <div class="waiting-div row justify-content-md-center">
             <div class="col-sm-8 col-sm-offset-2">
                 <h1>Waiting Room</h1>
             </div>
-            <div id='player-room' class="col-sm-6 col-sm-offset-3">
+            <div id='player-room' class="col-sm-6 ">
                 <!-- disini div buat masing-masing player yang masuk -->
             </div>
         </div>
-           
+        
+        <!-- modal rule game -->
+        <!-- Button trigger modal rule game -->
+        <button id="button-rule" type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModalCenter" style="position:absolute; top:70px; right:25%;">
+            Game Rule
+        </button>  
+
 
         <div class="game-divition row">
             <!-- -----------------------------------------top----------------------------------- -->
+            <!-- Modal End Game -->
+            <!-- Button trigger modal end game -->
+            <button id="button-score" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalScore" style="position:absolute; top:110px; right:25%;">
+                Score
+            </button>
+
             <div class="player-top container col-6 d-flex justify-content-center">
                 <div class="card-bg-hor card-bg-top">
                    <div class="pname-top">
                        <h3 class="player-name p3name">p3name</h3>
                    </div> 
+                   <div class="turn-sign" style="position:relative; top: 200px; color:white">
+                       <h1>Your Turn</h1>
+                   </div>
                 </div>
-                <div class="pass-sign" style="width:100px; height:50px; position: absolute; top:200px; padding-top:10px;">
-                </div>
+                <div class="pass-sign" style="width:100px; height:50px; position: absolute; top:170px; right: 130px; padding-top:10px; color:greenyellow;"></div>
+                <div class="p3-timer" style="position: absolute; top:185px; right: 130px;"></div>
             </div>
-    
+   
             <div class="container">
                 <div class="row">
                     <!-- -----------------------------------------left------------------------------------->
@@ -43,24 +58,24 @@
                                 <h3 class="player-name text-rotate-right p2name"> p2name </h3>
                             </div>
                         </div>
-                        <div class="pass-sign" style="width:100px; height:50px; position: absolute; left:210px; padding-top:10px;">
-                        </div>
+                        <div class="pass-sign" style="width:100px; height:50px; position: absolute; left:210px; padding-top:10px; color:greenyellow;"></div>
+                        <div class="p2-timer" style="position: absolute; left:210px;"></div>
                     </div>
             
                     <!-- -----------------------------------------field------------------------------------->
-                    <div class="card-field col-sm-8 d-flex justify-content-center align-items-center flex-column">
-                        <div class=" col-sm-8" style="z-index: 10; max-width: 280px; max-height: 280px;">
+                    <div class=" col-sm-8 d-flex justify-content-center align-items-center flex-column">
+                        <div class=" card-field col-sm-8" style="z-index: 10; max-width: 280px; max-height: 280px;">
 
-                            <div class="field field-top d-flex justify-content-center" style=" width: 247px; height: 140px;">
+                            <div class="field field-top d-flex justify-content-center" style=" width: 247px; height: 140px; position: absolute; top: 20px;">
                             </div>
 
-                            <div class="field field-bot d-flex justify-content-center" style="width: 247px; height: 140px;">
+                            <div class="field field-bot d-flex justify-content-center" style="width: 247px; height: 140px; position: absolute; bottom: 20px;">
                             </div>
 
-                            <div class="field field-left d-flex justify-content-center rotate90" style="width: 247px; height: 140px; position: absolute; top:70px; left:-40px;">
+                            <div class="field field-left d-flex justify-content-center rotate90" style="width: 247px; height: 140px; position: absolute; top:70px; left:-30px;">
                             </div>
 
-                            <div class="field field-right d-flex justify-content-center rotate90" style="width: 247px; height: 140px; position: absolute; top:70px; right:-40px;">
+                            <div class="field field-right d-flex justify-content-center rotate90" style="width: 247px; height: 140px; position: absolute; top:70px; right:-30px;">
                             </div>
                         </div>
                     </div>
@@ -73,32 +88,154 @@
                                 <h3 class="player-name text-rotate-left p4name"> p4name</h3>
                             </div>
                         </div>
-                        <div class="pass-sign" style="width:100px; height:50px; position: absolute; right:210px; padding-top:10px;">
-                        </div>
+                        <div class="pass-sign" style="width:100px; height:50px; position: absolute; right:210px; padding-top:10px; color:greenyellow;"></div>
+                        <div class="p4-timer" style="position: absolute; right:210px;"></div>
                     </div>
                 </div>
             </div>
             <!-- -----------------------------------------bot------------------------------------->
             <div class="player-bot container col-6 d-flex justify-content-center">
                 <div class="card-bg-hor card-bg-bot">
-                    <center><h3 class="player-name myname">myname</h3></center>
+                    <center><h3 class="player-name myname" style="position:relative; top:-5px;">myname</h3></center>
                 </div>
 
-                <div class="pass-sign" style="width:100px; height:50px; position: absolute; bottom:260px;  padding-top:10px;">
+                <div class="pass-sign" style="width:100px; height:50px; position: absolute; bottom:250px; right: 130px; padding-top:10px; color:greenyellow;">
                 </div>
 
                 <div class="btn-div btn-group btn-group-lg">
                     <button class="btn btn-play btn-primary" onclick="playButton()">PLAY</button>
                     <button class="btn btn-pass btn-danger" onclick="passButton()">PASS</button>
                 </div>
+
+                <div class="player-timer" style="position: absolute; bottom:245px; right: 130px;">
+                </div>
             </div>
         </div>
 
-        <div class="score" style="position: absolute; left: 200px; top: 25px;">
-            <h3 class="high-score"></h3>
-            <h3 class="second-score"></h3>
-            <h3 class="third-score"></h3>
-            <h3 class="fourth-score"></h3>
+        <!-------------------------------------- modal -------------------------------->
+        <!-- Modal rule game-->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content" style="background-color:bisque">
+                <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalCenterTitle" style="color:black">Big Old 2 Game Rule</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="" style="color:black;">
+                        <p style="text-align:justify">
+                            1. The player who has the lowest card play first. <br><br>
+                            2. For the International Mode, the lowest card is 3 Diamonds. However for the Taiwanese Mode, the lowest card is 3 Clubs. <br><br>
+                            3. The picture below is the rank of suits in the International Mode <br><br>
+                            <center>
+                                <img src="./cards_img/AD.png" alt="" width="150px">
+                                <img src="./cards_img/AC.png" alt="" width="150px">
+                                <img src="./cards_img/AH.png" alt="" width="150px">
+                                <img src="./cards_img/AS.png" alt="" width="150px">
+                            </center> <br>
+                        </P>
+                        <p style="text-align:justify">
+                            4. The pictures below is the rank of suits in the Taiwanese Mode <br><br>
+                            <center>
+                                <img src="./cards_img/AC.png" alt="" width="150px">
+                                <img src="./cards_img/AD.png" alt="" width="150px">
+                                <img src="./cards_img/AH.png" alt="" width="150px">
+                                <img src="./cards_img/AS.png" alt="" width="150px">
+                            </center>
+                        </p>
+
+                        <p style="text-align:justify">
+                            5. When in control, a player may play any valid 1 (single), 2 (pair) or 5 card hand. 
+                            Subsequent players must play a valid hand of the same number of cards which is higher than the previous hand played. 
+                            This continues until everyone passes, at which point control is gained again and any valid hand may be played. <br><br>
+
+                            6. The 5 cards hand rank from the lowest to highest is straight, flush, full house, four cards, straight flush <br><br>
+
+                            7. Straight (5 numbers in a row) example:
+                            <center>
+                                <img src="./cards_img/10C.png" alt="" width="140px">
+                                <img src="./cards_img/QH.png" alt="" width="140px">
+                                <img src="./cards_img/JD.png" alt="" width="140px">
+                                <img src="./cards_img/KS.png" alt="" width="140px">
+                                <img src="./cards_img/AS.png" alt="" width="140px">
+                            </center>
+                        </P>
+                        <p style="text-align:justify">
+                            8. Flush (5 cards of same suit) example:
+                            <center>
+                                <img src="./cards_img/5S.png" alt="" width="140px">
+                                <img src="./cards_img/7S.png" alt="" width="140px">
+                                <img src="./cards_img/10S.png" alt="" width="140px">
+                                <img src="./cards_img/KS.png" alt="" width="140px">
+                                <img src="./cards_img/AS.png" alt="" width="140px">
+                            </center>
+                        </p>
+                        <p style="text-align:justify">
+                            9. Full House (3 of one number + 1 pair) example:
+                            <center>
+                                <img src="./cards_img/QD.png" alt="" width="140px">
+                                <img src="./cards_img/QC.png" alt="" width="140px">
+                                <img src="./cards_img/QS.png" alt="" width="140px">
+                                <img src="./cards_img/KH.png" alt="" width="140px">
+                                <img src="./cards_img/KS.png" alt="" width="140px">
+                            </center>
+                        </p>
+
+                        <p style="text-align:justify">
+                            10. Four Cards (4 of one number + 1 single) example:
+                            <center>
+                                <img src="./cards_img/AD.png" alt="" width="140px">
+                                <img src="./cards_img/AC.png" alt="" width="140px">
+                                <img src="./cards_img/AH.png" alt="" width="140px">
+                                <img src="./cards_img/AS.png" alt="" width="140px">
+                                <img src="./cards_img/JS.png" alt="" width="140px">
+                            </center>
+                        </p>
+
+                        <p style="text-align:justify">
+                            11. Straight Flush (both straight and flush) example:
+                            <center>
+                                <img src="./cards_img/10S.png" alt="" width="140px">
+                                <img src="./cards_img/JS.png" alt="" width="140px">
+                                <img src="./cards_img/QS.png" alt="" width="140px">
+                                <img src="./cards_img/KS.png" alt="" width="140px">
+                                <img src="./cards_img/AS.png" alt="" width="140px">
+                            </center>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+            
+        <!-- Modal end game-->
+        <div class="modal fade" id="modalScore" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalCenterTitle" style="color:black">Score</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="" style="color:black;">
+                        <h3 class="high-score"></h3>
+                        <h3 class="second-score"></h3>
+                        <h3 class="third-score"></h3>
+                        <h3 class="fourth-score"></h3>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close-score" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
         </div>
 
         <script src="/socket.io/socket.io.js"></script>
@@ -108,5 +245,6 @@
         <script src="js/gameroom.js"></script>
         <script src="js/animation.js"></script>
         <script src="js/button.js"></script>
+        <script src="bootstrap-4.1.3-dist/js/bootstrap.js"></script>
     </body>
 </html>

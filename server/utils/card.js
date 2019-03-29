@@ -157,6 +157,9 @@ class Card{
             var thirdCard  = cardNumber[2];
             var fourthCard = cardNumber[3];
             var fifthCard  = cardNumber[4];
+            if(firstCard === 11 && secondCard === 12 && thirdCard === 13 && fourthCard === 14 && fifthCard === 15) return false;
+            if(firstCard === 3 && secondCard === 4 && thirdCard === 5 && fourthCard === 6 && fifthCard === 15) return true;
+            if(firstCard === 3 && secondCard === 4 && thirdCard === 5 && fourthCard === 14 && fifthCard === 15) return true;
             return ((firstCard + 1) === secondCard && (secondCard + 1) === thirdCard && (thirdCard + 1) === fourthCard && (fourthCard + 1) === fifthCard); 
         }
         else return false;

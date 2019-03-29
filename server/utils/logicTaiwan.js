@@ -12,7 +12,7 @@ class LogicTaiwan{
     }
 
     higherCombo(cards1, cards2){
-        return (card.getComboScore(cards1) > card.getComboScore(cards2)) > 0;
+        return (card.getComboScore(cards1) - card.getComboScore(cards2)) > 0;
     }
 
     legalCard(cards){

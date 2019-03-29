@@ -13,6 +13,7 @@ var logic = new Logic();
 const {LogicTaiwan} = require('./utils/logicTaiwan');
 var logicTaiwan = new LogicTaiwan();
 
+
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 var app = express();
@@ -31,14 +32,14 @@ io.on('connection', (socket)=>{
             if(roommode != getRoomMode) return callback("Must be the same mode")
         }
 
-        var roomPlayerCount = roomPlayers.length;
-        if(roomPlayerCount >= 4){
-            return callback('Room is Full')
-        }
-
         var existName = players.getPlayerName(username);
         if(existName){
             return callback("Username already taken")
+        }
+
+        var roomPlayerCount = roomPlayers.length;
+        if(roomPlayerCount >= 4){
+            return callback('Room is Full')
         }
         callback()
     });
@@ -47,6 +48,7 @@ io.on('connection', (socket)=>{
     var id;
     socket.on('joinWaitingRoom', (params,callback)=>{
         var username = params.Username;
+        
         var roomname = params.Room;
         var roommode = params.Mode;
         var existName = players.getPlayerName(username);
@@ -73,12 +75,14 @@ io.on('connection', (socket)=>{
         var roomPlayerCount = players.getPlayerList(roomname).length; // ngambil ulang jumlah player
         var roomPlayers = players.getPlayerList(roomname);
         var playersNumb = players.getPlayersNumb(roomPlayers, roomPlayerCount);
-
+        console.log(roomPlayers)
         if(roomPlayerCount === 4){
             rooms.addRoom(roomname, roomPlayers);
-            io.to(roomname).emit('gameStart', playersNumb);
+            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
+            io.to(roomname).emit('gameStart', playersNumb, currentTurn);
             rooms.updateGameStatus(roomname, "playing")
-            console.log(JSON.stringify(rooms,undefined,2))
+            rooms.getRoom(roomname).currentTurn = currentTurn;
+            // console.log(JSON.stringify(rooms,undefined,2))
             return callback();
         }
         callback(); //gak ngasih apa-apa karna ga error
@@ -148,7 +152,7 @@ io.on('connection', (socket)=>{
         var passCount = rooms.countPassedPlayers(roomname);
 
         // Check roomnya
-        if(roommode === "0"){
+        if(roommode === "0" || roommode === '2'){
             if(playerRoom.turn === 1){
                 if(!logic.legalFirstMove(cardname)) return callback("Must throw 3 Diamonds")
             }
@@ -178,6 +182,7 @@ io.on('connection', (socket)=>{
             if(playerRoom.turn > 1 && passCount != 3){
                 var topField = rooms.getTopField(roomname).card;
                 if(!logicTaiwan.legalMove(cardname, topField)) return callback(`${cardname} is less than ${topField}`)
+                console.log()
             }
         }
 
@@ -192,11 +197,14 @@ io.on('connection', (socket)=>{
             playerRoom.turn = 1;
             playerRoom.field = [];
             playerRoom.currentTurn = "";
-            rooms.updatePlayerScore(roomname);
+            rooms.updatePlayerScore(roomname,roommode);
+            // console.log(rooms.updatePlayerScore(roomname, roommode))
             rooms.resetRoom(roomname, roomPlayers);
 
+
+            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
             var playerScore = rooms.getPlayersScore(roomname);
-            io.to(roomname).emit('newGame', playerScore);
+            io.to(roomname).emit('newGame', playerScore, currentTurn);
             return callback();
         }
         
@@ -208,6 +216,7 @@ io.on('connection', (socket)=>{
     socket.on("cdControlTurn", (params)=>{
         var username = params.Username;
         var roomname = params.Room;
+        var roommode = params.Mode;
         var playerRoom = rooms.getRoom(roomname);
         var player = playerRoom.players.find((p)=>p.username === username);
         var passCount = rooms.countPassedPlayers(roomname);
@@ -223,18 +232,16 @@ io.on('connection', (socket)=>{
             playerRoom.turn = 1;
             playerRoom.field = [];
             playerRoom.currentTurn = "";
-            rooms.updatePlayerScore(roomname);
+            rooms.updatePlayerScore(roomname, roommode);
             rooms.resetRoom(roomname, roomPlayers);
 
             var playerScore = rooms.getPlayersScore(roomname);
             io.to(roomname).emit('newGame', playerScore);
-            console.log("asdf")
+            // console.log("asdf")
         }
         else{
             var currentTurn = rooms.changeTurn(roomname, roomPlayers, player.pno) // ganti turn
             io.to(roomname).emit('afterThrow', currentTurn, rooms.getTopField(roomname)); // emit event afterThrow buat update semua kartu player di layar masing2
-            console.log(roomPlayers);
-            console.log(player.pno);
         }
     });
 
@@ -242,11 +249,17 @@ io.on('connection', (socket)=>{
         var roomname = players.getPlayerRoom(id);
         var player = players.getPlayer(id);
         if(player){
-            console.log(player);
-            if(player.gamestatus != "playing");{
+            if(player.gamestatus != "playing"){
                 players.removePlayer(id);
                 var playerList = players.getPlayerNames(roomname);
                 io.to(player.roomname).emit('updatePlayerList', playerList);
+            }
+            if(player.gamestatus === "playing"){
+                player.gamestatus = "disconnected";
+                if (rooms.isRoomEmpty(roomname)){
+                    players.removePlayerFromRoom(roomname)
+                    rooms.removeRoom(roomname)
+                }
             }
         }
         console.log('disconnected')

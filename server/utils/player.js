@@ -67,9 +67,17 @@ class Players{
         return player;
     }
     
+    removePlayerFromRoom(roomname){
+        var player = this.getPlayerNames(roomname);
+        if (player){
+            this.players = this.players.filter((player)=> player.roomname != roomname);
+        }
+        return player;
+    }
+
     updatePlayStatus(id){
         var player = this.getPlayer(id);
-        player.playstatus = "pass"
+        player.playstatus = "pass";
     }
 }
 module.exports = {Players};

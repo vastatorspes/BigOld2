@@ -68,16 +68,35 @@ class Roomtest{
         return room.unshift(field);
     }
 
-    updatePlayerScore(roomname){
+    updatePlayerScore(roomname, roommode){
         var room = this.getRoom(roomname);
         var players = room.players;
         var score = 0;
-        for(var i=0; i<players.length; i++){
-            if (players[i].hand.length === 0) var j = i;
-            players[i].score -= players[i].hand.length;
-            score += players[i].hand.length;
+        if (roommode === 0 || roommode === 1){
+            for(var i=0; i<players.length; i++){
+                if (players[i].hand.length === 0) var j = i;
+                players[i].score -= players[i].hand.length;
+                score += players[i].hand.length;
+            }
+            if (typeof j !== "undefined") players[j].score += score;
         }
-        if (typeof j !== "undefined") players[j].score += score;
+
+        if(roommode === 2){
+            for(var i=0; i<players.length; i++){
+                if (players[i].hand.length === 0) var j = i;
+
+                var penalty = players[i].hand.filter(c => c === '2D' || c === '2C' || c === '2H' || c === '2S')
+                if (penalty.length > 0){
+                    players[i].score -= players[i].hand.length * (2** penalty.length);
+                    score += players[i].hand.length * (2** penalty.length);    
+                }
+                else{
+                    players[i].score -= players[i].hand.length;
+                    score += players[i].hand.length;
+                }
+            }
+            if (typeof j !== "undefined") players[j].score += score;
+        }
 
         var currentScore = [];
         players.forEach(p => {

@@ -54,7 +54,22 @@ io.on('connection', (socket)=>{
         var existName = players.getPlayerName(username);
         id = username;
         if(existName){
-            return callback("Username already taken")
+            var player = players.getPlayer(username);
+            var playerGameStatus = player.gamestatus;
+            var playerRoom = player.roomname;
+            var playerMode = player.roommode;
+            console.log(player);
+            // if(playerGameStatus === 'disconnected' && playerRoom === roomname && playerMode === roommode){
+            //     var roomPlayerCount = players.getPlayerList(roomname).length; // ngambil ulang jumlah player
+            //     var roomPlayers = players.getPlayerList(roomname);
+            //     var playersNumb = players.getPlayersNumb(roomPlayers, roomPlayerCount);
+            //     var currentTurn = rooms.getRoom(roomname).currentTurn;
+            //     socket.emit('gameStart', playersNumb, currentTurn);
+            //     player.gamestatus = "playing";
+            //     return callback ();
+            // }
+            if(playerGameStatus === 'disconnected' && playerRoom === roomname && playerMode === roommode) return callback('reconnect');
+            else return callback("Username already taken")
         }
         var roomPlayerCount = players.getPlayerList(roomname).length;
         if(roomPlayerCount >= 4){ //validasi room pentuh waktu maksa masukin url
@@ -260,6 +275,7 @@ io.on('connection', (socket)=>{
                     players.removePlayerFromRoom(roomname)
                     rooms.removeRoom(roomname)
                 }
+                // console.log(JSON.stringify(rooms, undefined,2))
             }
         }
         console.log('disconnected')

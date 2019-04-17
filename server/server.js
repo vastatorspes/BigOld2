@@ -79,12 +79,20 @@ io.on('connection', (socket)=>{
         console.log(roomPlayers)
         if(roomPlayerCount === 4){
             rooms.addRoom(roomname, roomPlayers);
+<<<<<<< HEAD
             var timeCount = getRoomParams(roommode).timeCount;
             var firstCard = getRoomParams(roommode).lowestCard;
             var currentTurn = rooms.getFirstTurn(roomname, firstCard);
             io.to(roomname).emit('gameStart', playersNumb, currentTurn, timeCount);
             rooms.updateGameStatus(roomname, "playing")
             rooms.getRoom(roomname).currentTurn = currentTurn;
+=======
+            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
+            io.to(roomname).emit('gameStart', playersNumb, currentTurn);
+            rooms.updateGameStatus(roomname, "playing")
+            rooms.getRoom(roomname).currentTurn = currentTurn;
+            // console.log(JSON.stringify(rooms,undefined,2))
+>>>>>>> 2df574583327089f03ca01a26f7d2c82627894f1
             return callback();
         }
         callback(); //gak ngasih apa-apa karna ga error
@@ -178,8 +186,14 @@ io.on('connection', (socket)=>{
             playerRoom.currentTurn = "";
             rooms.updatePlayerScore(roomname,roommode);
             rooms.resetRoom(roomname, roomPlayers);
+<<<<<<< HEAD
             var firstCard = getRoomParams(roommode).lowestCard;
             var currentTurn = rooms.getFirstTurn(roomname, firstCard);
+=======
+
+
+            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
+>>>>>>> 2df574583327089f03ca01a26f7d2c82627894f1
             var playerScore = rooms.getPlayersScore(roomname);
             io.to(roomname).emit('newGame', playerScore, currentTurn);
             return callback();

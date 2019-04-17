@@ -196,7 +196,6 @@ socket.on("newGame", function(pScore, currentTurn){
     jQuery(".second-score").text(playerScore[1][0] + " : " + playerScore[1][1])
     jQuery(".third-score").text(playerScore[2][0] + " : " + playerScore[2][1])
     jQuery(".fourth-score").text(playerScore[3][0] + " : " + playerScore[3][1])
-
     setTimeout(()=>{
         jQuery("#close-score").click()
     }, 5000);

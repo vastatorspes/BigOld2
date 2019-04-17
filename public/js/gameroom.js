@@ -4,7 +4,7 @@ var myusername, p2username, p3username, p4username;
 var pass = false;
 var params = jQuery.deparam(window.location.search);
 var timer;
-var timeCount = 20000;
+var timeCount;
 
 // waktu player konek ke server / masuk room
 socket.on('connect', function(){
@@ -35,7 +35,8 @@ socket.on('updatePlayerList', function(players){
     });
 });   
 
-socket.on('gameStart', function(playersNumb, currentTurn){
+socket.on('gameStart', function(playersNumb, currentTurn, time){
+    timeCount = time
     roomPlayersNumb = playersNumb;
     document.querySelector("link[href='/css/waiting.css']").href = "/css/game.css";
     $("div.waiting-div").css("display", "none");
@@ -82,7 +83,9 @@ socket.on('gameStart', function(playersNumb, currentTurn){
     if(params.Username === currentTurn){
         $(".turn-sign").empty()
         $(".turn-sign").append(`<h1>Your Turn</h1>`)
-        $(".btn-div").css("display", "block");
+        setTimeout(()=>{
+            $(".btn-div").css("display", "block");
+        }, 5000);
         $(".btn-pass").prop("disabled", true);
     }
     else{
@@ -95,8 +98,11 @@ socket.on('gameStart', function(playersNumb, currentTurn){
     jQuery(".third-score").text(p3username + " : 0" )
     jQuery(".fourth-score").text(p4username + " : 0" )
 
-    timerCountdown(currentTurn);
+    
     emitInitHand();
+    setTimeout(()=>{
+        timerCountdown(currentTurn);
+    }, 5000);
 });
 
 socket.on("afterThrow", function(currentTurn, topfield){
@@ -190,10 +196,15 @@ socket.on("newGame", function(pScore, currentTurn){
     jQuery(".second-score").text(playerScore[1][0] + " : " + playerScore[1][1])
     jQuery(".third-score").text(playerScore[2][0] + " : " + playerScore[2][1])
     jQuery(".fourth-score").text(playerScore[3][0] + " : " + playerScore[3][1])
+
     setTimeout(()=>{
         jQuery("#close-score").click()
+    }, 5000);
+
+    emitInitHand()
+
+    setTimeout(()=>{
         timerCountdown(currentTurn);
-        emitInitHand();
     }, 5000);
 })
 
@@ -212,36 +223,21 @@ function emitInitHand(){
             }
         }
         // munculin tombol kalo jalan pertama
-        if(params.Mode === "0" || params.Mode === "2"){
-            if(hand.myhand[0] === "3D"){
-                $(".btn-div").css("display", "block");
-                $(".btn-pass").prop("disabled", true);
-                timer = setTimeout(()=>{
-                    socket.emit("throwCard", params, ["3D"], function(err){
-                        if(err){
-                            alert(err);
-                            return false;
-                        }
-                        return true;
-                    })
-                }, timeCount)
-            }
-        }
 
-        if(params.Mode === "1"){
-            if(hand.myhand[0] === "3C"){
+        if(hand.myhand[0] === hand.lowestCard){
+            setTimeout(()=>{
                 $(".btn-div").css("display", "block");
-                $(".btn-pass").prop("disabled", true);
-                timer = setTimeout(()=>{
-                    socket.emit("throwCard", params, ["3C"], function(err){
-                        if(err){
-                            alert(err);
-                            return false;
-                        }
-                        return true;
-                    })
-                }, timeCount)
-            }
+            }, 5000);
+            $(".btn-pass").prop("disabled", true);
+            timer = setTimeout(()=>{
+                socket.emit("throwCard", params, [hand.lowestCard], function(err){
+                    if(err){
+                        alert(err);
+                        return false;
+                    }
+                    return true;
+                })
+            }, timeCount + 5000)
         }
         
         // ------------------------------------------------------ player2 table ------------------------------------------------------
@@ -372,10 +368,11 @@ function timerCountdown(currentTurn){
     $(".p3-timer").empty();
     $(".p4-timer").empty();
 
-    if(myusername === currentTurn) $(".player-timer").append(`<video autoplay> <source src="./img/timer.mp4" type="video/mp4"> </video>`)
-    if(p2username === currentTurn) $(".p2-timer").append(`<video autoplay> <source src="./img/timer.mp4" type="video/mp4"> </video>`)
-    if(p3username === currentTurn) $(".p3-timer").append(`<video autoplay> <source src="./img/timer.mp4" type="video/mp4"> </video>`)
-    if(p4username === currentTurn) $(".p4-timer").append(`<video autoplay> <source src="./img/timer.mp4" type="video/mp4"> </video>`)
+    var startTime = 20 - (timeCount/1000);
+    if(myusername === currentTurn) $(".player-timer").append(`<video autoplay> <source src="./img/timer.mp4#t=${startTime},20" type="video/mp4"> </video>`)
+    if(p2username === currentTurn) $(".p2-timer").append(`<video autoplay> <source src="./img/timer.mp4#t=${startTime},20" type="video/mp4"> </video>`)
+    if(p3username === currentTurn) $(".p3-timer").append(`<video autoplay> <source src="./img/timer.mp4#t=${startTime},20" type="video/mp4"> </video>`)
+    if(p4username === currentTurn) $(".p4-timer").append(`<video autoplay> <source src="./img/timer.mp4#t=${startTime},20" type="video/mp4"> </video>`)
 }
 socket.on('disconnect', function(){
     console.log('disconnect from server');

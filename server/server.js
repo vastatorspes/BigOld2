@@ -8,11 +8,12 @@ const {Players} = require('./utils/player');
 var players = new Players();
 const {Rooms} = require('./utils/room');
 var rooms = new Rooms();
-const {Logic} = require('./utils/logic');
-var logic = new Logic();
-const {LogicTaiwan} = require('./utils/logicTaiwan');
-var logicTaiwan = new LogicTaiwan();
+// const {Logic} = require('./utils/logic');
+// var logic = new Logic();
+// const {LogicTaiwan} = require('./utils/logicTaiwan');
+// var logicTaiwan = new LogicTaiwan();
 
+const {getRoomParams, getRoomMoveLogic} = require('./utils/roommode');
 
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
@@ -54,22 +55,7 @@ io.on('connection', (socket)=>{
         var existName = players.getPlayerName(username);
         id = username;
         if(existName){
-            var player = players.getPlayer(username);
-            var playerGameStatus = player.gamestatus;
-            var playerRoom = player.roomname;
-            var playerMode = player.roommode;
-            console.log(player);
-            // if(playerGameStatus === 'disconnected' && playerRoom === roomname && playerMode === roommode){
-            //     var roomPlayerCount = players.getPlayerList(roomname).length; // ngambil ulang jumlah player
-            //     var roomPlayers = players.getPlayerList(roomname);
-            //     var playersNumb = players.getPlayersNumb(roomPlayers, roomPlayerCount);
-            //     var currentTurn = rooms.getRoom(roomname).currentTurn;
-            //     socket.emit('gameStart', playersNumb, currentTurn);
-            //     player.gamestatus = "playing";
-            //     return callback ();
-            // }
-            if(playerGameStatus === 'disconnected' && playerRoom === roomname && playerMode === roommode) return callback('reconnect');
-            else return callback("Username already taken")
+            return callback("Username already taken")
         }
         var roomPlayerCount = players.getPlayerList(roomname).length;
         if(roomPlayerCount >= 4){ //validasi room pentuh waktu maksa masukin url
@@ -93,11 +79,12 @@ io.on('connection', (socket)=>{
         console.log(roomPlayers)
         if(roomPlayerCount === 4){
             rooms.addRoom(roomname, roomPlayers);
-            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
-            io.to(roomname).emit('gameStart', playersNumb, currentTurn);
+            var timeCount = getRoomParams(roommode).timeCount;
+            var firstCard = getRoomParams(roommode).lowestCard;
+            var currentTurn = rooms.getFirstTurn(roomname, firstCard);
+            io.to(roomname).emit('gameStart', playersNumb, currentTurn, timeCount);
             rooms.updateGameStatus(roomname, "playing")
             rooms.getRoom(roomname).currentTurn = currentTurn;
-            // console.log(JSON.stringify(rooms,undefined,2))
             return callback();
         }
         callback(); //gak ngasih apa-apa karna ga error
@@ -108,6 +95,7 @@ io.on('connection', (socket)=>{
     socket.on('initHand', (params, callback)=>{
         var username = params.Username;
         var roomname = params.Room;
+        var roommode = params.Mode;
         var playerRoom = rooms.getRoom(roomname);
         var player = playerRoom.players.find((p)=>p.username === username);
         var playerHand = player.hand;
@@ -137,6 +125,7 @@ io.on('connection', (socket)=>{
             'p2hand' : p2hand.hand.length,
             'p3hand' : p3hand.hand.length,
             'p4hand' : p4hand.hand.length,
+            'lowestCard' : getRoomParams(roommode).lowestCard
         }
         callback(obj)
     });
@@ -166,40 +155,15 @@ io.on('connection', (socket)=>{
         var player = playerRoom.players.find((p)=>p.username === username);
         var passCount = rooms.countPassedPlayers(roomname);
 
-        // Check roomnya
-        if(roommode === "0" || roommode === '2'){
-            if(playerRoom.turn === 1){
-                if(!logic.legalFirstMove(cardname)) return callback("Must throw 3 Diamonds")
-            }
-    
-            // check kartu yang di keluarin legal ga
-            if(!logic.legalCard(cardname)){
-                return callback("Only can play single, pair or 5 cards combo");
-            }
-    
-            if(playerRoom.turn > 1 && passCount != 3){
-                var topField = rooms.getTopField(roomname).card;
-                if(!logic.legalMove(cardname, topField)) return callback(`${cardname} is less than ${topField}`)
-            }
+        if(playerRoom.turn > 1 && passCount != 3){
+            var topField = rooms.getTopField(roomname).card;
         }
 
-        // check first turn ato bukan
-        if(roommode === "1"){
-            if(playerRoom.turn === 1){
-                if(!logicTaiwan.legalFirstMove(cardname)) return callback("Must throw 3 Diamonds")
-            }
-    
-            // check kartu yang di keluarin legal ga
-            if(!logicTaiwan.legalCard(cardname)){
-                return callback("Only can play single, pair or 5 cards combo");
-            }
-    
-            if(playerRoom.turn > 1 && passCount != 3){
-                var topField = rooms.getTopField(roomname).card;
-                if(!logicTaiwan.legalMove(cardname, topField)) return callback(`${cardname} is less than ${topField}`)
-                console.log()
-            }
+        var cb = getRoomMoveLogic(roommode, playerRoom.turn, cardname, passCount, topField);
+        if (cb){
+            return callback(cb)
         }
+
 
         if(passCount === 3){
             rooms.refreshPlayStatus(roomname);
@@ -213,11 +177,9 @@ io.on('connection', (socket)=>{
             playerRoom.field = [];
             playerRoom.currentTurn = "";
             rooms.updatePlayerScore(roomname,roommode);
-            // console.log(rooms.updatePlayerScore(roomname, roommode))
             rooms.resetRoom(roomname, roomPlayers);
-
-
-            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
+            var firstCard = getRoomParams(roommode).lowestCard;
+            var currentTurn = rooms.getFirstTurn(roomname, firstCard);
             var playerScore = rooms.getPlayersScore(roomname);
             io.to(roomname).emit('newGame', playerScore, currentTurn);
             return callback();
@@ -250,8 +212,10 @@ io.on('connection', (socket)=>{
             rooms.updatePlayerScore(roomname, roommode);
             rooms.resetRoom(roomname, roomPlayers);
 
+            var firstCard = getRoomParams(roommode).lowestCard;
+            var currentTurn = rooms.getFirstTurn(roomname, firstCard);
             var playerScore = rooms.getPlayersScore(roomname);
-            io.to(roomname).emit('newGame', playerScore);
+            io.to(roomname).emit('newGame', playerScore, currentTurn);
             // console.log("asdf")
         }
         else{

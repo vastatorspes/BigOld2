@@ -1,8 +1,7 @@
 const {Card} = require('./card');
 var card = new Card();
 
-const {CardTaiwan} = require('./cardTaiwan');
-var cardTaiwan = new CardTaiwan();
+const {modeSortingCards, countRoomScore} = require('./roommode');
 
 class Rooms{
     constructor(){
@@ -20,13 +19,7 @@ class Rooms{
 
         players.forEach((player)=>{
             var draw = deck.slice(0,13);
-            if(player.roommode === "0" || player.roommode === "2") {
-                player.hand = card.sortingCards(draw);
-            }
-
-            if(player.roommode === "1") {
-                player.hand = cardTaiwan.sortingCards(draw);
-            }
+            player.hand = modeSortingCards(player.roommode, draw)
             deck = deck.slice(13, deck.length);
         });
 
@@ -55,14 +48,9 @@ class Rooms{
         return room;
     }
 
-    getFirstTurnInter(roomname){
+    getFirstTurn(roomname, fCard){
         var player = this.getRoom(roomname).players;
-        return player.find(p => p.hand[0] === "3D").username;
-    }
-
-    getFirstTurnTaiwan(roomname){
-        var player = this.getRoom(roomname).players;
-        return player.find(p => p.hand[0] === "3C").username;
+        return player.find(p => p.hand[0] === fCard).username;
     }
 
     throwCard(username, roomname, card){
@@ -86,30 +74,12 @@ class Rooms{
         var room = this.getRoom(roomname);
         var players = room.players;
         var score = 0;
-        if (roommode === '0' || roommode === '1'){
-            for(var i=0; i<players.length; i++){
-                if (players[i].hand.length === 0) var j = i;
-                players[i].score -= players[i].hand.length;
-                score += players[i].hand.length;
-            }
+        for(var i=0; i<players.length; i++){
+            if (players[i].hand.length === 0) var j = i;
+            players[i].score -= countRoomScore(roommode, players[i].hand);
+            score += countRoomScore(roommode, players[i].hand);
         }
 
-        if(roommode === '2'){
-            for(var i=0; i<players.length; i++){
-                if (players[i].hand.length === 0) var j = i;
-
-                var penalty = players[i].hand.filter(c => c === '2D' || c === '2C' || c === '2H' || c === '2S')
-                if (penalty.length > 0){
-                    players[i].score -= (players[i].hand.length * (2** penalty.length));
-                    score += (players[i].hand.length * (2** penalty.length));    
-                }
-                else{
-                    players[i].score -= players[i].hand.length;
-                    score += players[i].hand.length;
-                }
-            }
-        }
-        
         if (typeof j !== "undefined") players[j].score += score;
 
         var currentScore = [];

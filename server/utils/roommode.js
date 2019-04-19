@@ -48,8 +48,8 @@ var getRoomMoveLogic = (roommode, turn, cardname, passCount, topField) =>{
     }
 
     // check first turn ato bukan
-    if(roommode === "1"){
-        if(playerRoom.turn === 1){
+    else if(roommode === "1"){
+        if(turn === 1){
             if(!logicTaiwan.legalFirstMove(cardname)) return ("Must throw 3 Diamonds")
         }
 
@@ -58,7 +58,7 @@ var getRoomMoveLogic = (roommode, turn, cardname, passCount, topField) =>{
             return ("Only can play single, pair or 5 cards combo");
         }
 
-        if(playerRoom.turn > 1 && passCount != 3){
+        if(turn > 1 && passCount != 3){
             if(!logicTaiwan.legalMove(cardname, topField)) return (`${cardname} is less than ${topField}`)
         }
     }

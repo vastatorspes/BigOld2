@@ -69,119 +69,16 @@
     </div> 
     
     <!-------------------------------------- modal -------------------------------->
-    <!-- Modal rule game-->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content" style="background-color:whitesmoke">
-            <div class="modal-header">
-            <h4 class="modal-title" id="exampleModalCenterTitle" style="color:black">Big Old 2 Game Rule</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
-            <div class="modal-body">
-                <div class="" style="color:black;">
-                    <p style="text-align:justify">
-                        1. The player who has the lowest card play first. <br><br>
-                        2. For the International Mode, the lowest card is 3 Diamonds. However for the Taiwanese Mode, the lowest card is 3 Clubs. <br><br>
-                        3. The picture below is the rank of suits in the International Mode from lowest to highest <br><br>
-                        <center>
-                            <img src="./cards_img/AD.png" alt="" width="150px">
-                            <img src="./cards_img/AC.png" alt="" width="150px">
-                            <img src="./cards_img/AH.png" alt="" width="150px">
-                            <img src="./cards_img/AS.png" alt="" width="150px">
-                        </center> <br>
-                    </P>
-                    <p style="text-align:justify">
-                        4. The pictures below is the rank of suits in the Taiwanese Mode from lowest to highest <br><br>
-                        <center>
-                            <img src="./cards_img/AC.png" alt="" width="150px">
-                            <img src="./cards_img/AD.png" alt="" width="150px">
-                            <img src="./cards_img/AH.png" alt="" width="150px">
-                            <img src="./cards_img/AS.png" alt="" width="150px">
-                        </center>
-                    </p>
+    <div w3-include-html="modal.html"></div>
     
-                    <p style="text-align:justify">
-                        5. When in control, a player may play any valid 1 (single), 2 (pair) or 5 card hand. 
-                        Subsequent players must play a valid hand of the same number of cards which is higher than the previous hand played. 
-                        This continues until everyone passes, at which point control is gained again and any valid hand may be played. <br><br>
     
-                        6. The 5 cards hand rank from the lowest to highest is straight, flush, full house, four cards, straight flush <br><br>
-                        
-                        7. Straight (5 numbers in a row) example:
-                        <center>
-                            <img src="./cards_img/10C.png" alt="" width="140px">
-                            <img src="./cards_img/QH.png" alt="" width="140px">
-                            <img src="./cards_img/JD.png" alt="" width="140px">
-                            <img src="./cards_img/KS.png" alt="" width="140px">
-                            <img src="./cards_img/AS.png" alt="" width="140px">
-                        </center><br>
-                        Comparison of Straights is based on highest number primarily, so 2 Spades Straight is the highest. <br>
-                        A-2-3-4-5 and 2-3-4-5-6 are valid but J-Q-K-A-2 is not valid. <hr style="background-color:gray; height: 1px;">
-                    </P>
-                    <p style="text-align:justify">
-                        8. Flush (5 cards of same suit) example:
-                        <center>
-                            <img src="./cards_img/5S.png" alt="" width="140px">
-                            <img src="./cards_img/7S.png" alt="" width="140px">
-                            <img src="./cards_img/10S.png" alt="" width="140px">
-                            <img src="./cards_img/KS.png" alt="" width="140px">
-                            <img src="./cards_img/AS.png" alt="" width="140px">
-                        </center> <br>
-                        Comparison of Flush is based on highest number primarily, so 2 Spades Flush is the highest. <hr style="background-color:gray; height: 1px;">
-                    </p>
-                    <p style="text-align:justify">
-                        9. Full House (3 of one number + 1 pair) example:
-                        <center>
-                            <img src="./cards_img/QD.png" alt="" width="140px">
-                            <img src="./cards_img/QC.png" alt="" width="140px">
-                            <img src="./cards_img/QS.png" alt="" width="140px">
-                            <img src="./cards_img/KH.png" alt="" width="140px">
-                            <img src="./cards_img/KS.png" alt="" width="140px">
-                        </center> <br>
-                        Comparison of Full House is based on higher 3 cards section. <hr style="background-color:gray; height: 1px;">
-                    </p>
-    
-                    <p style="text-align:justify">
-                        10. Four Cards (4 of one number + 1 single) example:
-                        <center>
-                            <img src="./cards_img/AD.png" alt="" width="140px">
-                            <img src="./cards_img/AC.png" alt="" width="140px">
-                            <img src="./cards_img/AH.png" alt="" width="140px">
-                            <img src="./cards_img/AS.png" alt="" width="140px">
-                            <img src="./cards_img/JS.png" alt="" width="140px">
-                        </center><br>
-                        Comparison of Four Cards is based on higher 4 cards section. <hr style="background-color:gray; height: 1px;">
-                    </p>
-    
-                    <p style="text-align:justify">
-                        11. Straight Flush (both straight and flush) example:
-                        <center>
-                            <img src="./cards_img/10S.png" alt="" width="140px">
-                            <img src="./cards_img/JS.png" alt="" width="140px">
-                            <img src="./cards_img/QS.png" alt="" width="140px">
-                            <img src="./cards_img/KS.png" alt="" width="140px">
-                            <img src="./cards_img/AS.png" alt="" width="140px">
-                        </center><br>
-                        Comparison of Straight Flush is based on highest number primarily, so 2 Spades Straight Flush is the highest.
-                    </p>
-                    <p style="text-align:justify">
-                        12. For Double Penalty Mode, your score penalty will be doubled for each '2' card remain in your hand. <br> <br>
-                        13. For Rapid Mode, everyone only has 5 seconds to discard a card(s).
-                    </p>
-                </div>
-            </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-        </div>
-    </div>
-
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/login.js"></script>    
     <script src="js/libs/jquery-3.3.1.min.js"></script>
     <script src="bootstrap-4.1.3-dist/js/bootstrap.js"></script>
+    <script src="js/libs/includehtml.js"></script>
+    <script>
+        includeHTML();
+    </script>
 </body>
 </html>

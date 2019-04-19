@@ -8,12 +8,10 @@ const {Players} = require('./utils/player');
 var players = new Players();
 const {Rooms} = require('./utils/room');
 var rooms = new Rooms();
-// const {Logic} = require('./utils/logic');
-// var logic = new Logic();
-// const {LogicTaiwan} = require('./utils/logicTaiwan');
-// var logicTaiwan = new LogicTaiwan();
 
 const {getRoomParams, getRoomMoveLogic} = require('./utils/roommode');
+const {isRealString} = require('./utils/validation');
+const {generateMessage} = require('./utils/message');
 
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
@@ -79,20 +77,12 @@ io.on('connection', (socket)=>{
         console.log(roomPlayers)
         if(roomPlayerCount === 4){
             rooms.addRoom(roomname, roomPlayers);
-<<<<<<< HEAD
             var timeCount = getRoomParams(roommode).timeCount;
             var firstCard = getRoomParams(roommode).lowestCard;
             var currentTurn = rooms.getFirstTurn(roomname, firstCard);
             io.to(roomname).emit('gameStart', playersNumb, currentTurn, timeCount);
             rooms.updateGameStatus(roomname, "playing")
             rooms.getRoom(roomname).currentTurn = currentTurn;
-=======
-            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
-            io.to(roomname).emit('gameStart', playersNumb, currentTurn);
-            rooms.updateGameStatus(roomname, "playing")
-            rooms.getRoom(roomname).currentTurn = currentTurn;
-            // console.log(JSON.stringify(rooms,undefined,2))
->>>>>>> 2df574583327089f03ca01a26f7d2c82627894f1
             return callback();
         }
         callback(); //gak ngasih apa-apa karna ga error
@@ -186,14 +176,8 @@ io.on('connection', (socket)=>{
             playerRoom.currentTurn = "";
             rooms.updatePlayerScore(roomname,roommode);
             rooms.resetRoom(roomname, roomPlayers);
-<<<<<<< HEAD
             var firstCard = getRoomParams(roommode).lowestCard;
             var currentTurn = rooms.getFirstTurn(roomname, firstCard);
-=======
-
-
-            var currentTurn = (roommode === "1") ? rooms.getFirstTurnTaiwan(roomname) : rooms.getFirstTurnInter(roomname);
->>>>>>> 2df574583327089f03ca01a26f7d2c82627894f1
             var playerScore = rooms.getPlayersScore(roomname);
             io.to(roomname).emit('newGame', playerScore, currentTurn);
             return callback();
@@ -236,6 +220,15 @@ io.on('connection', (socket)=>{
             var currentTurn = rooms.changeTurn(roomname, roomPlayers, player.pno) // ganti turn
             io.to(roomname).emit('afterThrow', currentTurn, rooms.getTopField(roomname)); // emit event afterThrow buat update semua kartu player di layar masing2
         }
+    });
+
+    socket.on('createMessage', (params, message, callback) => {
+        var username = players.getPlayerName(params.Username);
+        var roomname = params.Room;
+        if (username && isRealString(message)) {
+          io.to(roomname).emit('newMessage', generateMessage(username, message));
+        }
+        callback();
     });
 
     socket.on('disconnect', ()=>{

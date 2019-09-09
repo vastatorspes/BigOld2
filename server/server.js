@@ -32,8 +32,9 @@ const connectionURL = 'mongodb+srv://Vastator:BigOld2@bigold2logs-t9xbg.mongodb.
 const databaseName = 'BigOld2Log';
 var db;
 
-MongoClient.connect(connectionURL, {useNewUrlParser: true}, (error, client)=>{
+MongoClient.connect(connectionURL, {useNewUrlParser: true},{useCreateIndex: true},{useUnifiedTopology: true}, (error, client)=>{
     if(error){
+        console.log(error)
         return console.log('Unable to connect to database!')
     }
 

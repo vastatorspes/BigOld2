@@ -28,8 +28,7 @@ var botMove = (url, hand, field, control, turn, fieldHistory, e1Hand, e2Hand, e3
 // db
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
-const connectionURL = 'mongodb://127.0.0.1:27017';
-// const connectionURL = 'mongodb://140.118.127.146:27017';
+const connectionURL = 'mongodb+srv://Vastator:BigOld2@bigold2logs-t9xbg.mongodb.net/test?retryWrites=true&w=majority';
 const databaseName = 'BigOld2Log';
 var db;
 

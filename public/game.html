@@ -20,8 +20,36 @@
             <div id='player-room' class="col-sm-6 ">
                 <!-- disini div buat masing-masing player yang masuk -->
             </div>
+
+            <div id='bot-option' class="col-sm-4" style="position:absolute; bottom: 150px; display:none">
+                <!-- div buat milih BOT -->
+                
+                    <!-- <div class="form-group row justify-content-md-center justify-content-sm-center">
+                        <div class="col-sm-8">
+                            <label for="boturl">BOT URL</label>
+                            <input type="text" class="form-control" id="boturl" placeholder="Enter URL">
+                            <small id="" class="form-text">Input your own BOT API to play</small>
+                        </div>
+                    </div>
+                    <br> -->
+
+                    <div class="form-group row justify-content-md-center justify-content-sm-center">
+                        <div class="col-sm-8">
+                            <!-- <label for="choosebot">Or select BOT to play</label> -->
+                            <select id="choosebot" class="form-control">
+                              <option selected value="https://tranquil-harbor-14793.herokuapp.com/RuleBased1/">Sample AI</option>
+                              <option>Coming soon</option>
+                            </select>
+                        </div> 
+                    </div>
+                    <br>
+                    <button class="btn btn-primary" onclick="botStart()">Play</button>
+                  
+            </div>
         </div>
         
+
+
         <!-- modal rule game -->
         <!-- Button trigger modal rule game -->
         <button id="button-rule" type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModalCenter" style="position:absolute; top:70px; right:25%;">
@@ -56,7 +84,7 @@
                     <div class="player-left col-2 d-flex align-items-center flex-column justify-content-center">
                         <div class="card-bg-ver card-bg-left">
                             <div class="col-1 pname-left d-flex justify-content-center" style="position: relative; left: 160px;">
-                                <h3 class="player-name text-rotate-right p2name"> p2name </h3>
+                                <h3 class="player-name text-rotate-right p2name d-flex justify-content-center"> p2name </h3>
                             </div>
                         </div>
                         <div class="pass-sign" style="width:100px; height:50px; position: absolute; left:210px; padding-top:10px; color:greenyellow;"></div>
@@ -66,6 +94,10 @@
                     <!-- -----------------------------------------field------------------------------------->
                     <div class=" col-sm-8 d-flex justify-content-center align-items-center flex-column">
                         <div class=" card-field col-sm-8" style="z-index: 10; max-width: 280px; max-height: 280px;">
+                            <div class="start-timer" style=" z-index:100; position: relative; left: 55px; top:70px;">
+                                <!-- <video src="img/timer_5.mp4" type="video/mp4"></video> -->
+                                <!-- <video autoplay> <source src="img/timer_5.mp4" type="video/mp4"> </video> -->
+                            </div>
 
                             <div class="field field-top d-flex justify-content-center" style=" width: 247px; height: 140px; position: absolute; top: 20px;">
                             </div>
@@ -86,7 +118,7 @@
                     <div class="player-right col-2 d-flex align-items-center flex-column justify-content-center">
                         <div class="card-bg-ver card-bg-right">
                             <div class="col-1 pname-right d-flex justify-content-center">
-                                <h3 class="player-name text-rotate-left p4name"> p4name</h3>
+                                <h3 class="player-name text-rotate-left p4name d-flex justify-content-center"> p4name</h3>
                             </div>
                         </div>
                         <div class="pass-sign" style="width:100px; height:50px; position: absolute; right:210px; padding-top:10px; color:greenyellow;"></div>
@@ -146,7 +178,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                <h4 class="modal-title" id="exampleModalCenterTitle" style="color:black">Score</h4>
+                <h4 class="modal-title" id="exampleModalCenterTitle" style="color:black">Score <span class="game-number"></span></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -157,6 +189,13 @@
                         <h3 class="second-score"></h3>
                         <h3 class="third-score"></h3>
                         <h3 class="fourth-score"></h3>
+                    </div>
+                    <hr>
+                    <div class="win-score" style="color:black;">
+                        <h3 class="high-win"></h3>
+                        <h3 class="second-win"></h3>
+                        <h3 class="third-win"></h3>
+                        <h3 class="fourth-win"></h3>
                     </div>
                 </div>
                 <div class="modal-footer">

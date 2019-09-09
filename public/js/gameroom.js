@@ -5,22 +5,27 @@ var pass = false;
 var params = jQuery.deparam(window.location.search);
 var timer;
 var timeCount;
+var zindex = 100;
 
 // waktu player konek ke server / masuk room
 socket.on('connect', function(){
     console.log('Player Connected to the Server');
     // ----------------------- EVENT 1. EMIT JOIN WAITING ROOM -----------------------
-    socket.emit('joinWaitingRoom', params, function(message){
+    socket.emit('joinWaitingRoom', params, function(message, numb){
         if(message === 'Room is Full'){
             alert(message);
-            window.location.href = '/';
+            return window.location.href = '/';
         }
         else if(message === 'Username already taken'){
             alert(message);
-            window.location.href = '/';
+            return window.location.href = '/';
         }
-        else if(message === 'reconnect'){
-            emitInitHand()
+        else if(message === 'Must be the same mode'){
+            alert(message);
+            return window.location.href = '/';
+        }
+        else if(numb === 1){
+            $("#bot-option").css("display", "block");
         }
     });
 });
@@ -100,18 +105,20 @@ socket.on('gameStart', function(playersNumb, currentTurn, time){
 
     
     emitInitHand();
+    startCountdown()
     setTimeout(()=>{
         timerCountdown(currentTurn);
     }, 5000);
 });
 
 socket.on("afterThrow", function(currentTurn, topfield){
+    zindex ++;
     clearTimeout(timer)
     jQuery('.player-bot img').remove();
     jQuery('.player-left img').remove();
     jQuery('.player-right img').remove();
     jQuery('.player-top img').remove();
-    jQuery('.img-card-field').remove();
+    //jQuery('.img-card-field').remove();
     timerCountdown(currentTurn);
     emitInitHand();
     
@@ -148,12 +155,15 @@ socket.on("afterPass", function(currentTurn, prevPno, passCount){
         $(".btn-pass").prop("disabled", true);
         $(".pass-sign").empty();
         $(".turn-sign").empty()
-        $(".turn-sign").append(`<h1>Your Turn</h1>`)
         if(params.Username === currentTurn){
             $(".btn-div").css("display", "block");
+            $(".turn-sign").append(`<h1>Your Turn</h1>`)
             timer = setTimeout(()=>{
                 socket.emit("cdControlTurn", params)
             }, timeCount)
+        }
+        else{
+            $(".turn-sign").append(`<h1>${currentTurn}'s Turn</h1>`)
         }
     }
 
@@ -174,7 +184,7 @@ socket.on("afterPass", function(currentTurn, prevPno, passCount){
     }
 })
 
-socket.on("newGame", function(pScore, currentTurn){
+socket.on("newGame", function(pScore, currentTurn, pWin, gameno){
     $(".btn-div").css("display", "none");
     jQuery('.player-bot img').remove();
     jQuery('.player-left img').remove();
@@ -187,21 +197,42 @@ socket.on("newGame", function(pScore, currentTurn){
     $(".p3-timer").empty();
     $(".p4-timer").empty();
 
+    if(params.Username === currentTurn){
+        $(".turn-sign").empty()
+        $(".turn-sign").append(`<h1>Your Turn</h1>`)
+    }
+    else{
+        $(".turn-sign").empty()
+        $(".turn-sign").append(`<h1>${currentTurn}'s Turn</h1>`)
+    }
+
     var playerScore = pScore.sort(function(a, b) {
         return b[1] - a[1];
     });
 
+    var playerWin = pWin.sort(function(a, b) {
+        return b[1] - a[1];
+    });
+
     jQuery("#button-score").click()
+    jQuery(".game-number").text("Game Number " + gameno)
+
     jQuery(".high-score").text(playerScore[0][0] + " : " + playerScore[0][1])
     jQuery(".second-score").text(playerScore[1][0] + " : " + playerScore[1][1])
     jQuery(".third-score").text(playerScore[2][0] + " : " + playerScore[2][1])
     jQuery(".fourth-score").text(playerScore[3][0] + " : " + playerScore[3][1])
+    
+    jQuery(".high-win").text(playerWin[0][0] + " : " + playerWin[0][1])
+    jQuery(".second-win").text(playerWin[1][0] + " : " + playerWin[1][1])
+    jQuery(".third-win").text(playerWin[2][0] + " : " + playerWin[2][1])
+    jQuery(".fourth-win").text(playerWin[3][0] + " : " + playerWin[3][1])
+    
     setTimeout(()=>{
         jQuery("#close-score").click()
     }, 5000);
 
     emitInitHand()
-
+    startCountdown()
     setTimeout(()=>{
         timerCountdown(currentTurn);
     }, 5000);
@@ -221,7 +252,7 @@ function emitInitHand(){
                                                         src="/cards_img/${hand.myhand[i]}.png" height="140">`));
             }
         }
-        // munculin tombol kalo jalan pertama
+        // munculin tombol kalo jalan pertama sama buang kartu kalo waktu abis pertama kali
 
         if(hand.myhand[0] === hand.lowestCard){
             setTimeout(()=>{
@@ -274,60 +305,193 @@ function emitInitHand(){
 
 function showField(prevPno, topfield){
     if (prevPno === p2numb){
+        jQuery('.field-left').empty();
+        jQuery('.field-left').css({"z-index": zindex});
+
+        greyCardFieldBot();
+        greyCardFieldLeft();
+        greyCardFieldRight();
+        greyCardFieldTop();
+
         for(var i=0; i<topfield.card.length; i++){
             if(i === 0){
                 jQuery('.field-left').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field img-card-field-left" id="${topfield.card[i]}" height="140">`)
                 )
             }
             if(i>0){
                 jQuery('.field-left').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field img-card-field-left" id="${topfield.card[i]}" height="140">`)
                 )
             }
         }
+
     }
 
     if (prevPno === p3numb){
+        jQuery('.field-top').empty();
+        jQuery('.field-top').css({"z-index": zindex});
+
+        greyCardFieldBot();
+        greyCardFieldLeft();
+        greyCardFieldRight();
+        greyCardFieldTop();
+
         for(var i=0; i<topfield.card.length; i++){
             if(i === 0){
                 jQuery('.field-top').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field img-card-field-top" id="${topfield.card[i]}"  height="140">`)
                 )
             }
             if(i>0){
                 jQuery('.field-top').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field img-card-field-top" id="${topfield.card[i]}" height="140">`)
                 )
             }
         }
     }
 
     if (prevPno === p4numb){
+        jQuery('.field-right').empty();
+        jQuery('.field-right').css({"z-index": zindex});
+
+        greyCardFieldBot();
+        greyCardFieldLeft();
+        greyCardFieldRight();
+        greyCardFieldTop();
+
         for(var i=0; i<topfield.card.length; i++){
             if(i === 0){
                 jQuery('.field-right').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field img-card-field-right" id="${topfield.card[i]}" height="140">`)
                 )
             }
             if(i>0){
                 jQuery('.field-right').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field img-card-field-right" id="${topfield.card[i]}" height="140">`)
                 )
             }
         }
     }
 
     if (prevPno === mynumb){
+        jQuery('.field-bot').empty();
+        jQuery('.field-bot').css({"z-index": zindex});
+
+        greyCardFieldBot();
+        greyCardFieldLeft();
+        greyCardFieldRight();
+        greyCardFieldTop();
+
         for(var i=0; i<topfield.card.length; i++){
             if(i === 0){
                 jQuery('.field-bot').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="img-card-field img-card-field-bot" id="${topfield.card[i]}" height="140">`)
                 )
             }
             if(i>0){
                 jQuery('.field-bot').append(
-                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field" height="140">`)
+                    jQuery(`<img src="./cards_img/${topfield.card[i]}.png" class="hor-margin img-card-field img-card-field-bot" id="${topfield.card[i]}" height="140">`)
+                )
+            }
+        }
+    }
+}
+
+function greyCardFieldTop(){
+    if(jQuery('.img-card-field-top')[0]){
+        var prevCardLists = [];
+
+        $('.field-top > img').each(function(){
+            prevCardLists.push($(this).attr('id'))
+        });
+
+        jQuery('.field-top').empty();
+        jQuery('.field-top').css({"z-index": zindex-1});
+        for(var j=0; j<prevCardLists.length; j++){
+            if(j === 0){
+                jQuery('.field-top').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(j>0){
+                jQuery('.field-top').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+}
+
+function greyCardFieldBot(){
+    if(jQuery('.img-card-field-bot')[0]){
+        var prevCardLists = [];
+
+        $('.field-bot > img').each(function(){
+            prevCardLists.push($(this).attr('id'))
+        });
+
+        jQuery('.field-bot').empty();
+        jQuery('.field-bot').css({"z-index": zindex-1});
+        for(var j=0; j<prevCardLists.length; j++){
+            if(j === 0){
+                jQuery('.field-bot').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(j>0){
+                jQuery('.field-bot').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+}
+
+function greyCardFieldLeft(){
+    if(jQuery('.img-card-field-left')[0]){
+        var prevCardLists = [];
+
+        $('.field-left > img').each(function(){
+            prevCardLists.push($(this).attr('id'))
+        });
+
+        jQuery('.field-left').empty();
+        jQuery('.field-left').css({"z-index": zindex-1});
+        for(var j=0; j<prevCardLists.length; j++){
+            if(j === 0){
+                jQuery('.field-left').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(j > 0){
+                jQuery('.field-left').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="hor-margin img-card-field" height="140">`)
+                )
+            }
+        }
+    }
+}
+
+function greyCardFieldRight(){
+    if(jQuery('.img-card-field-right')[0]){
+        var prevCardLists = [];
+
+        $('.field-right > img').each(function(){
+            prevCardLists.push($(this).attr('id'))
+        });
+
+        jQuery('.field-right').empty();
+        jQuery('.field-right').css({"z-index": zindex-1});
+        for(var j=0; j<prevCardLists.length; j++){
+            if(j===0){
+                jQuery('.field-right').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="img-card-field" height="140">`)
+                )
+            }
+            if(j>0){
+                jQuery('.field-right').append(
+                    jQuery(`<img src="./cards_img/cards_dark/${prevCardLists[j]}.png" class="hor-margin img-card-field" height="140">`)
                 )
             }
         }
@@ -376,3 +540,10 @@ function timerCountdown(currentTurn){
 socket.on('disconnect', function(){
     console.log('disconnect from server');
 });
+
+function startCountdown(){
+    $(".start-timer").append(`<video autoplay> <source src="./img/timer_5.mp4" type="video/mp4"> </video>`)
+    setTimeout(()=>{
+        $(".start-timer").empty();
+    }, 5000);
+}

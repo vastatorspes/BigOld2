@@ -8,7 +8,8 @@ class Players{
         var playstatus = "";
         var hand = [];
         var score = 0;
-        var player = {id, username, roomname, roommode, pno, gamestatus, playstatus, hand, score};
+        var win = 0;
+        var player = {id, username, roomname, roommode, pno, gamestatus, playstatus, hand, score, win};
         this.players.push(player);
         return player;
     }   
@@ -67,7 +68,7 @@ class Players{
         return player;
     }
     
-    removePlayerFromRoom(roomname){
+    removePlayersFromRoom(roomname){
         var player = this.getPlayerNames(roomname);
         if (player){
             this.players = this.players.filter((player)=> player.roomname != roomname);

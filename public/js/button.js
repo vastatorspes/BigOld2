@@ -23,3 +23,16 @@ function passButton(){
     socket.emit("passTurn", params)
     pass = true;
 }
+
+function botStart(){
+    var params = jQuery.deparam(window.location.search);
+    // var boturl = document.getElementById("boturl").value;
+    // if (boturl) {
+    //     return socket.emit("botStart", params, boturl, undefined)
+    // }
+
+    var choosebot = document.getElementById("choosebot").value;
+    if (choosebot){
+        return socket.emit("botStart", params, undefined, choosebot)
+    }
+}

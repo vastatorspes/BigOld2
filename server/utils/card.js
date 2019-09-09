@@ -280,6 +280,18 @@ class Card{
         }
 
         if (this.isStraight(cards)){
+            if (cards.includes('2S') || cards.includes('2H') || cards.includes('2C') || cards.includes('2D')){
+                if (cards.includes('AS') || cards.includes('AH') || cards.includes('AC') || cards.includes('AD')){
+                    var sortedCards = this.sortingCards(cards)
+                    var removeTwo = sortedCards.slice(0,3)
+                    return (1000 + Math.max.apply(null, this.getCardValue(removeTwo)))
+                }
+                else{
+                    var sortedCards = this.sortingCards(cards)
+                    var removeOne = sortedCards.slice(0,4)
+                    return (1000 + Math.max.apply(null, this.getCardValue(removeOne)))
+                }
+            }
             return (1000 + Math.max.apply(null, this.getCardValue(cards)))
         };
     }

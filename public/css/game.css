@@ -142,6 +142,7 @@ body{
     position: absolute;
     top: 50%;
     transform: rotate(-90deg);
+    min-width: 500px;
 }
 .pname-left{
     height:515px;
@@ -153,6 +154,7 @@ body{
     position: absolute;
     top: 50%;
     transform: rotate(90deg);
+    min-width: 500px;
 }
 .pname-top{
     width: 520px;

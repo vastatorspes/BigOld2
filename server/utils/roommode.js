@@ -8,6 +8,14 @@ var card = new Card();
 const {CardTaiwan} = require('./cardTaiwan');
 var cardTaiwan = new CardTaiwan();
 
+var getRoomModeName = (roommode) =>{
+    if (roommode === '0') return "International Mode";
+    if (roommode === '1') return "Taiwanese Mode";
+    if (roommode === '2') return "Double Penalty";
+    if (roommode === '3') return "Panic Mode";
+    if (roommode === '4') return "BOT";
+}
+
 var getRoomParams = (roommode) => {
     if (roommode === '3'){var timer = 5000}
     else {var timer = 20000}
@@ -22,7 +30,7 @@ var getRoomParams = (roommode) => {
 }
 
 var modeSortingCards = (roommode, draw) => {
-    if(roommode === "0" || roommode === "2" || roommode === "3") {
+    if(roommode === "0" || roommode === "2" || roommode === "3" || roommode === "4") {
         return card.sortingCards(draw);
     }
 
@@ -32,7 +40,7 @@ var modeSortingCards = (roommode, draw) => {
 }
 
 var getRoomMoveLogic = (roommode, turn, cardname, passCount, topField) =>{
-    if(roommode === "0" || roommode === '2' || roommode === '3'){
+    if(roommode === "0" || roommode === '2' || roommode === '3' || roommode === "4"){
         if(turn === 1){
             if(!logic.legalFirstMove(cardname)) return ("Must throw 3 Diamonds")
         }
@@ -65,7 +73,7 @@ var getRoomMoveLogic = (roommode, turn, cardname, passCount, topField) =>{
 }
 
 var countRoomScore = (roommode, hand) => {
-    if (roommode === '0' || roommode === '1'|| roommode === "3"){
+    if (roommode === '0' || roommode === '1'|| roommode === "3" || roommode === "4"){
         return hand.length
     }
 
@@ -83,5 +91,6 @@ module.exports = {
     getRoomParams, 
     getRoomMoveLogic, 
     modeSortingCards,
-    countRoomScore
+    countRoomScore,
+    getRoomModeName
 };

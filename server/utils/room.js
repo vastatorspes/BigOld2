@@ -8,7 +8,7 @@ class Rooms{
         this.rooms = [];
     }
 
-    generateRoom(roomname, players){
+    generateRoom(roomname, players, gameno){
         var deckString = [
         'AD', '2D', '3D','4D', '5D', '6D','7D', '8D', '9D', '10D', 'JD', 'QD', 'KD',
         'AC', '2C', '3C','4C', '5C', '6C','7C', '8C', '9C', '10C', 'JC', 'QC', 'KC',
@@ -16,30 +16,36 @@ class Rooms{
         'AS', '2S', '3S','4S', '5S', '6S','7S', '8S', '9S', '10S', 'JS', 'QS', 'KS']
         
         var deck = card.shuffle(deckString);
-
+        var initDeck = deck;
+        var initState = []
         players.forEach((player)=>{
             var draw = deck.slice(0,13);
             player.hand = modeSortingCards(player.roommode, draw)
             deck = deck.slice(13, deck.length);
+            const pName = player.username;
+            const pHand = modeSortingCards(player.roommode, draw);
+            initState.push({pName, pHand})
         });
 
         var turn = 1;
         var field = []
         var currentTurn;
-        var room = {roomname, players, turn, field, currentTurn};
+        var move = [];
+        var endState = [];
+        var boturl = '';
+        var room = {roomname, players, initDeck, turn, field, currentTurn, initState, move, endState, boturl, gameno};
         return room;        
     }
 
     addRoom(roomname, players){
-        var room = this.generateRoom(roomname,players);
+        var room = this.generateRoom(roomname,players,0);
         this.rooms.push(room);
         return room;
     }
 
-    resetRoom(roomname, players){
+    resetRoom(roomname, players, gameno){
         var room = this.getRoom(roomname);
-        var reset = this.generateRoom(roomname,players);
-        room = reset;
+        room = this.generateRoom(roomname,players,gameno);
         return room;
     }
 
@@ -55,16 +61,38 @@ class Rooms{
 
     throwCard(username, roomname, card){
         var room = this.getRoom(roomname);
-        var getplayer = room.players;
-        var playerHand = getplayer.find(x => x.username === username).hand;
-        for(var i = 0; i<card.length; i++){
-            var returnedCard = playerHand.find( c => c === card[i]);
-            playerHand.splice(playerHand.indexOf(returnedCard),1);
+        try {
+            var getplayer = room.players;
+            var playerHand = getplayer.find(x => x.username === username).hand;
+            for(var i = 0; i<card.length; i++){
+                var returnedCard = playerHand.find( c => c === card[i]);
+                playerHand.splice(playerHand.indexOf(returnedCard),1);
+            }
+            this.updateRoomField(room.roomname, {username, card})
+            this.updateLog(room.roomname, {username, card})
+            return playerHand;
+            
+        } catch (error) {
+            console.log('error throw card')
         }
-        this.updateRoomField(room.roomname, {username, card})
-        return playerHand;
     }
     
+    updateLog(roomname, field){
+        var room = this.getRoom(roomname);
+        room.move.push(field)
+    }
+
+    updateEndState(roomname){
+        var room = this.getRoom(roomname);
+        var players = room.players;
+        room.endState = [
+            {'p1Name' : players[0].username, 'p1Hand' : players[0].hand},
+            {'p2Name' : players[1].username, 'p2Hand' : players[1].hand},
+            {'p3Name' : players[2].username, 'p3Hand' : players[2].hand},
+            {'p4Name' : players[3].username, 'p4Hand' : players[3].hand}
+        ]
+    }
+
     updateRoomField(roomname, field){
         var room = this.getRoom(roomname).field;
         return room.unshift(field);
@@ -111,7 +139,23 @@ class Rooms{
     }
 
     getTopField(roomname){
-        return this.getRoom(roomname).field[0];
+        try {
+            return this.getRoom(roomname).field[0];
+        } catch (error) {
+            console.log('error get top field')
+        }
+    }
+
+    getFieldHistory(roomname){
+        var fieldHistory = [];
+        var field = this.getRoom(roomname).field;
+        // console.log('field = '+ JSON.stringify(field,undefined,2));
+        for (var i = 0; i < field.length; i++) {
+            for(var j = 0; j<field[i].card.length; j++){
+                fieldHistory.push(field[i].card[j]);
+            }
+        }
+        return fieldHistory;
     }
 
     refreshPlayStatus(roomname){
@@ -120,6 +164,20 @@ class Rooms{
         player.forEach(p => {
             p.playstatus = "";
         });
+    }
+
+    getPassStatus(roomname){
+        var roomPlayers = this.getRoom(roomname).players;
+
+        var passSign = []
+        roomPlayers.forEach(p => {
+            if (p.playstatus === "pass") {
+                passSign.push(1)
+            }
+            else{passSign.push(0)}
+        })
+
+        return passSign;
     }
 
     countPassedPlayers(roomname){
@@ -138,10 +196,37 @@ class Rooms{
         return playersScore;
     }
 
+    getPlayersWin(roomname){
+        var playerList = this.getRoom(roomname).players;
+        var playersWin = [];
+        playerList.forEach(p => {
+            var username = p.username;
+            var score = p.win;
+            playersWin.push([username, score]);
+        });
+        return playersWin;
+    }
+
     isRoomEmpty(roomname){
         var playerList = this.getRoom(roomname).players;
         var disconnected = playerList.filter(x => x.gamestatus === "disconnected").length;
-        return (disconnected === 4);
+        if(disconnected === 4){
+            return true
+        };
+        return false
+    }
+
+    isRoomBotEmpty(roomname){
+        try {
+            var playerList = this.getRoom(roomname).players;
+            var humanLeft = playerList.filter(x => x.username.substring(0,4) !== "BOT-" && x.gamestatus !== "disconnected").length;
+            if(humanLeft === 0){
+                return true
+            };
+            return false
+        } catch (error) {
+            console.log('no room')
+        }
     }
 
     removeRoom(roomname){

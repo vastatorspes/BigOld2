@@ -102,8 +102,8 @@ var checkBotMove = (roomname, currentTurn) =>{
                 }
                 var url = playerRoom.boturl;
                 botMove(url, botHand, cardField, control, turn-1, fieldHistory, e1Hand, e2Hand, e3Hand, passSign, (cardname)=>{
-                    if (turn === 1) { var timeBot = 5000 }
-                    else { var timeBot = 1000 }
+                    if (turn === 1) { var timeBot = 10 }
+                    else { var timeBot = 10 }
                     setTimeout(()=>{
                         if (cardname.length === 0) {
                             var prevPno = player.pno;

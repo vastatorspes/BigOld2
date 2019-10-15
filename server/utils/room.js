@@ -60,8 +60,8 @@ class Rooms{
     }
 
     throwCard(username, roomname, card){
-        var room = this.getRoom(roomname);
         try {
+            var room = this.getRoom(roomname);
             var getplayer = room.players;
             var playerHand = getplayer.find(x => x.username === username).hand;
             for(var i = 0; i<card.length; i++){
@@ -73,68 +73,92 @@ class Rooms{
             return playerHand;
             
         } catch (error) {
-            console.log('error throw card')
+            console.log('error throwCard from room')
         }
     }
     
     updateLog(roomname, field){
-        var room = this.getRoom(roomname);
-        room.move.push(field)
+        try {
+            var room = this.getRoom(roomname);
+            room.move.push(field)
+        } catch (error) {
+            console.log('error updateLog from room')
+        }
     }
 
     updateEndState(roomname){
-        var room = this.getRoom(roomname);
-        var players = room.players;
-        room.endState = [
-            {'p1Name' : players[0].username, 'p1Hand' : players[0].hand},
-            {'p2Name' : players[1].username, 'p2Hand' : players[1].hand},
-            {'p3Name' : players[2].username, 'p3Hand' : players[2].hand},
-            {'p4Name' : players[3].username, 'p4Hand' : players[3].hand}
-        ]
+        try {
+            var room = this.getRoom(roomname);
+            var players = room.players;
+            room.endState = [
+                {'p1Name' : players[0].username, 'p1Hand' : players[0].hand},
+                {'p2Name' : players[1].username, 'p2Hand' : players[1].hand},
+                {'p3Name' : players[2].username, 'p3Hand' : players[2].hand},
+                {'p4Name' : players[3].username, 'p4Hand' : players[3].hand}
+            ]
+        } catch (error) {
+            console.log('error updateEndState from room')
+        }
     }
 
     updateRoomField(roomname, field){
-        var room = this.getRoom(roomname).field;
-        return room.unshift(field);
+        try {
+            var room = this.getRoom(roomname).field;
+            return room.unshift(field);
+        } catch (error) {
+            console.log('error updateRoomField from room')
+        }
     }
 
     updatePlayerScore(roomname, roommode){
-        var room = this.getRoom(roomname);
-        var players = room.players;
-        var score = 0;
-        for(var i=0; i<players.length; i++){
-            if (players[i].hand.length === 0) var j = i;
-            players[i].score -= countRoomScore(roommode, players[i].hand);
-            score += countRoomScore(roommode, players[i].hand);
+        try {
+            var room = this.getRoom(roomname);
+            var players = room.players;
+            var score = 0;
+            for(var i=0; i<players.length; i++){
+                if (players[i].hand.length === 0) var j = i;
+                players[i].score -= countRoomScore(roommode, players[i].hand);
+                score += countRoomScore(roommode, players[i].hand);
+            }
+    
+            if (typeof j !== "undefined") players[j].score += score;
+    
+            var currentScore = [];
+            players.forEach(p => {
+                currentScore.push({"name":p.username, "score":p.score})
+            });
+            return currentScore;
+        } catch (error) {
+            console.log('error updatePlayerScore from room')
         }
-
-        if (typeof j !== "undefined") players[j].score += score;
-
-        var currentScore = [];
-        players.forEach(p => {
-            currentScore.push({"name":p.username, "score":p.score})
-        });
-        return currentScore;
     }
 
     updateGameStatus(roomname, status){
-        var room = this.getRoom(roomname);
-        var players = room.players;
-        players.forEach(p => {
-            p.gamestatus = status;
-        });
+        try {
+            var room = this.getRoom(roomname);
+            var players = room.players;
+            players.forEach(p => {
+                p.gamestatus = status;
+            });            
+        } catch (error) {
+            console.log('error updateGameStatus from room')
+        }
     }
 
     changeTurn(roomname, roomPlayers, curnumb){
-        for(var i=1; i < roomPlayers.length; i++){
-            var numb = (curnumb + i) % 4;
-            numb === 0 ? numb = 4 : numb;
-            var currentTurn = roomPlayers.find(p => p.pno === numb);
-            if(currentTurn.playstatus === ""){
-                this.getRoom(roomname).currentTurn = currentTurn.username;
-                this.getRoom(roomname).turn ++;
-                return currentTurn.username;
+        try {
+            for(var i=1; i < roomPlayers.length; i++){
+                var numb = (curnumb + i) % 4;
+                numb === 0 ? numb = 4 : numb;
+                var currentTurn = roomPlayers.find(p => p.pno === numb);
+                if(currentTurn.playstatus === ""){
+                    this.getRoom(roomname).currentTurn = currentTurn.username;
+                    this.getRoom(roomname).turn ++;
+                    return currentTurn.username;
+                }
             }
+        } catch (error) {
+            console.log('error changeTurn from room')
         }
     }
 
@@ -142,78 +166,107 @@ class Rooms{
         try {
             return this.getRoom(roomname).field[0];
         } catch (error) {
-            console.log('error get top field')
+            console.log('error getTopField from room')
         }
     }
 
     getFieldHistory(roomname){
-        var fieldHistory = [];
-        var field = this.getRoom(roomname).field;
-        // console.log('field = '+ JSON.stringify(field,undefined,2));
-        for (var i = 0; i < field.length; i++) {
-            for(var j = 0; j<field[i].card.length; j++){
-                fieldHistory.push(field[i].card[j]);
+        try {
+            var fieldHistory = [];
+            var field = this.getRoom(roomname).field;
+            // console.log('field = '+ JSON.stringify(field,undefined,2));
+            for (var i = 0; i < field.length; i++) {
+                for(var j = 0; j<field[i].card.length; j++){
+                    fieldHistory.push(field[i].card[j]);
+                }
             }
+            return fieldHistory;
+        } catch (error) {
+            console.log('error getFieldHistory from room')
         }
-        return fieldHistory;
     }
 
     refreshPlayStatus(roomname){
-        var roomPlayers = this.getRoom(roomname).players;
-        var player = roomPlayers.filter(x => x.playstatus === "pass");
-        player.forEach(p => {
-            p.playstatus = "";
-        });
+        try {
+            var roomPlayers = this.getRoom(roomname).players;
+            var player = roomPlayers.filter(x => x.playstatus === "pass");
+            player.forEach(p => {
+                p.playstatus = "";
+            });            
+        } catch (error) {
+            console.log('error refreshPlayStatus from room')
+        }
     }
 
     getPassStatus(roomname){
-        var roomPlayers = this.getRoom(roomname).players;
-
-        var passSign = []
-        roomPlayers.forEach(p => {
-            if (p.playstatus === "pass") {
-                passSign.push(1)
-            }
-            else{passSign.push(0)}
-        })
-
-        return passSign;
+        try {
+            var roomPlayers = this.getRoom(roomname).players;
+            var passSign = []
+            roomPlayers.forEach(p => {
+                if (p.playstatus === "pass") {
+                    passSign.push(1)
+                }
+                else{passSign.push(0)}
+            })
+            return passSign;
+            
+        } catch (error) {
+            console.log('error getPassStatus from room')
+        }
     }
 
     countPassedPlayers(roomname){
-        var roomPlayers = this.getRoom(roomname).players;
-        return roomPlayers.filter(x => x.playstatus === "pass").length;
+        try {
+            var roomPlayers = this.getRoom(roomname).players;
+            return roomPlayers.filter(x => x.playstatus === "pass").length;
+        } catch (error) {
+            console.log('error countPassedPlayers from room')
+        }
     }
 
     getPlayersScore(roomname){
-        var playerList = this.getRoom(roomname).players;
-        var playersScore = [];
-        playerList.forEach(p => {
-            var username = p.username;
-            var score = p.score;
-            playersScore.push([username, score]);
-        });
-        return playersScore;
+        try {
+            var playerList = this.getRoom(roomname).players;
+            var playersScore = [];
+            playerList.forEach(p => {
+                var username = p.username;
+                var score = p.score;
+                playersScore.push([username, score]);
+            });
+            return playersScore;
+        } catch (error) {
+            console.log('error getPlayersScore from room')
+        }
     }
 
     getPlayersWin(roomname){
-        var playerList = this.getRoom(roomname).players;
-        var playersWin = [];
-        playerList.forEach(p => {
-            var username = p.username;
-            var score = p.win;
-            playersWin.push([username, score]);
-        });
-        return playersWin;
+        try {
+            var playerList = this.getRoom(roomname).players;
+            var playersWin = [];
+            playerList.forEach(p => {
+                var username = p.username;
+                var score = p.win;
+                playersWin.push([username, score]);
+            });
+            return playersWin;
+        } catch (error) {
+            console.log('error getPlayersWin from room')
+        }
+        
     }
 
     isRoomEmpty(roomname){
-        var playerList = this.getRoom(roomname).players;
-        var disconnected = playerList.filter(x => x.gamestatus === "disconnected").length;
-        if(disconnected === 4){
-            return true
-        };
-        return false
+        try {
+            var playerList = this.getRoom(roomname).players;
+            var disconnected = playerList.filter(x => x.gamestatus === "disconnected").length;
+            if(disconnected === 4){
+                return true
+            };
+            return false
+        } catch (error) {
+            console.log('error isRoomEmpty from room')
+        }
+        
     }
 
     isRoomBotEmpty(roomname){
@@ -230,11 +283,16 @@ class Rooms{
     }
 
     removeRoom(roomname){
-        var room = this.getRoom(roomname);
-        if (room){
-            this.rooms = this.rooms.filter((room)=> room.roomname != roomname);
+        try {
+            var room = this.getRoom(roomname);
+            if (room){
+                this.rooms = this.rooms.filter((room)=> room.roomname != roomname);
+            }
+            return room;
+        } catch (error) {
+            console.log('error removeRoom from room')
         }
-        return room;
+        
     }
 }
 
